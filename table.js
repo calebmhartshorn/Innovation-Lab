@@ -117,6 +117,10 @@ class InventoryManager {
     document.querySelectorAll('select').forEach(input => {
       input.addEventListener('change', this.exportData.bind(this));
     })
+    }
+  clearAllData() {
+      this.data.inventory = [];
+      this.renderTable();
   }
  
   addSection() {
@@ -207,3 +211,6 @@ data = { "inventory": [] }
  inventoryManager = new InventoryManager(data);
  inventoryManager.renderTable();
 document.getElementById('addSectionButton').addEventListener('click', () => inventoryManager.addSection());
+document.getElementById('clearallButton').addEventListener('click', function () {
+    inventoryManager.clearAllData();
+});
