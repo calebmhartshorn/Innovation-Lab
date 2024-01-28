@@ -108,15 +108,18 @@ class InventoryManager {
         uniqueItemDiv.appendChild(deleteButton);
       });
     });
-    document.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', this.exportData.bind(this));
+    document.querySelectorAll('#dataContainer input').forEach(input => {
+      if (input.id != "ingredientInput") {
+        input.addEventListener('input', this.exportData.bind(this));
+      }
     })
-    document.querySelectorAll('button').forEach(input => {
+    document.querySelectorAll('#dataContainer button').forEach(input => {
       input.addEventListener('click', this.exportData.bind(this));
     })
-    document.querySelectorAll('select').forEach(input => {
+    document.querySelectorAll('#dataContainer select').forEach(input => {
       input.addEventListener('change', this.exportData.bind(this));
     })
+    this.exportData();
     }
   clearAllData() {
       this.data.inventory = [];

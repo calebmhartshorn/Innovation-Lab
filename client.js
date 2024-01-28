@@ -1,5 +1,5 @@
 
-function postTable () {
+function postTable() {
     const jsonInput = document.getElementById('jsonOutput');
    
     try {

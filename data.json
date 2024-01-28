@@ -1,1 +1,1 @@
-{"inventory": [{"name": "egg", "unique": []}, {"name": "fish fingers", "unique": []}]}
+{"inventory": [{"name": "bacon", "unique": [{"uniqueDescription": "yum yum", "expirationDT": "", "quantity": {"amount": 0, "unit": ""}}]}, {"name": "chicken breast", "unique": []}, {"name": "apple cider vinegar", "unique": []}, {"name": "egg", "unique": []}, {"name": "egg noodles", "unique": []}]}
