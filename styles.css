@@ -21,8 +21,8 @@ body {
 .unique-items>div>* {
     margin-right: -1px;
 }
-#dataContainer>div:nth-child(-n+4) {
-margin-bottom: 8px;
+#dataContainer>div {
+margin-top: 8px;
 }
 
 #dataContainer>div>input {
@@ -54,9 +54,7 @@ button {
 .unique-items input {
     padding: 0;
 }
-#addSectionButton {
-    margin-bottom: 8px;
-}
+
 
 .unique-items {
     margin-left: 23px;
