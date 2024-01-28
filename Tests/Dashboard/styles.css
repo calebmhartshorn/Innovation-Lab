@@ -1,0 +1,16 @@
+.item .unique-items {
+    display: none;
+   }
+   
+   .item.collapsed .unique-items {
+    display: block;
+   }
+
+   .unique-items>div {
+    margin-left: 23px;
+   }
+
+   #export-container {
+    margin-top: 24px;
+    display: flex;
+   }
