@@ -1,14 +1,16 @@
-document.getElementById('readButton').addEventListener('click', function() {
-    fetch('/read')
-        .then(response => response.json())
-        .then(data => {
-            // Convert the JSON data to a string and insert it into the dataContainer div
-            document.getElementById('dataContainer').innerHTML = JSON.stringify(data);
-        });
- });
 
- document.getElementById('updateButton').addEventListener('click', function() {
-    const jsonInput = document.getElementById('jsonInput');
+fetch('/read')
+    .then(response => response.json())
+    .then(response1 => {
+        // Convert the JSON data to a string and insert it into the dataContainer div
+        data = response1
+        console.log(JSON.stringify(data));
+        inventoryManager.data = data;
+        inventoryManager.renderTable();
+    });
+
+ document.getElementById('exportButton').addEventListener('click', function() {
+    const jsonInput = document.getElementById('jsonOutput');
    
     try {
       const jsonData = JSON.parse(jsonInput.value);
@@ -26,10 +28,6 @@ document.getElementById('readButton').addEventListener('click', function() {
           return fetch('/read'); // Fetch the updated data
       })
       .then(response => response.json())
-      .then(data => {
-          // Update the dataContainer div with the new data
-          document.getElementById('dataContainer').innerHTML = JSON.stringify(data);
-      })
       .catch(error => {
           // Handle the error
           document.getElementById('statusMessage').innerText = 'An error occurred: ' + error;

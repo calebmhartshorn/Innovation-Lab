@@ -2,17 +2,15 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
 data = {}
-ip = "172.23.130.169"
+ip = "172.23.129.134"
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
     
-
     def set_common_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.end_headers()
-    
     
     def do_GET(self):
         global data
@@ -44,6 +42,19 @@ class WebServerHandler(BaseHTTPRequestHandler):
         elif self.path.endswith("/client.js"):
             try:
                 with open('client.js', 'r') as f:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/javascript')
+                    self.set_common_headers()
+                    self.wfile.write(f.read().encode())
+            except FileNotFoundError:
+                self.send_response(404)
+                self.send_header('Content-type', 'text/html')
+                self.set_common_headers()
+                self.wfile.write(b'JS file not found')
+
+        elif self.path.endswith("/table.js"):
+            try:
+                with open('table.js', 'r') as f:
                     self.send_response(200)
                     self.send_header('Content-type', 'application/javascript')
                     self.set_common_headers()

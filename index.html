@@ -5,13 +5,16 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-    <button id="readButton">Read Data</button>
+    <button id="addSectionButton">Add Section</button>
     <div id="dataContainer"></div>
 
-    <textarea id="jsonInput" rows="10" cols="30"></textarea>
-    <button id="updateButton">Update Data</button>
-    <div id="statusMessage"></div>
-
+    <div id="export-container">
+    <button id="exportButton">Export Data</button>
+    <textarea id="jsonOutput" readonly></textarea>
+    </div>
+    <label id="statusMessage"></label>
+    <script src="table.js"></script>
     <script src="client.js"></script>
+
 </body>
 </html>
