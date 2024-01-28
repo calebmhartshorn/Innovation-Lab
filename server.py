@@ -5,6 +5,14 @@ import threading
 import json
 import random
 import string
+import cv2
+import pytesseract
+import re
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+with open('ingredients.txt', 'r') as file:
+    all_ingredients = [line.strip().lower() for line in file.readlines()]
 
 data = {}
 scan_results = {}
@@ -163,21 +171,38 @@ class WebServerHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.set_common_headers()
-
 def ocr_thread():
     global scanning, scan_results
+
+    print("OCR thread started.")
+
+    cap = cv2.VideoCapture(1)
+    tog = 1
+    if not cap.isOpened():
+        print("Error: Could not open webcam.")
+        return
+
     while True:
-        if not scanning:
-            continue
-        scan_results = {
-            "name": ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)),
-            "uniqueDescription": ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)),
-            "expirationDT": "",
-            "quantity": {
-                "amount": random.randint(0, 500),
-                "unit": ["Pints", "Grams", "Ounces", "Kg", "Units"][random.randint(0, 4)]
-            }
-        }
+        if scanning:
+            if tog == 0:
+                cap = cv2.VideoCapture(1)# Restart the camera
+                tog = 1
+            ret, frame = cap.read()
+            if ret:
+                print("Scanning...")
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                text = pytesseract.image_to_string(gray)
+                captured_ingredients = [i.strip().lower() for i in re.split(',|\n', text) if i.strip().lower() in all_ingredients]
+                if captured_ingredients:
+                    scan_results = captured_ingredients
+                    print(f"Captured ingredient: {scan_results}")
+                else:
+                    print(f"Captured non ingredient text: {text}")
+        else:
+            if tog == 1:# Turn off camera once
+                cap.release()
+                tog = 0
+    print("OCR thread exiting.")
 
 def main():
     try:
