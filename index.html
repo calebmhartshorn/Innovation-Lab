@@ -3,15 +3,23 @@
 <head>
     <title>JSON Data Editor</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
     <button id="addSectionButton">Add Section</button>
     <div id="dataContainer"></div>
+    
+    <h3>Recipes</h3>
+    <ol id="recipes-container"></ol>
 
     <div id="export-container">
     <textarea id="jsonOutput" readonly></textarea>
     </div>
     <label id="statusMessage"></label>
+
+
     <script src="table.js"></script>
     <script src="client.js"></script>
 

@@ -26,8 +26,38 @@ function postTable () {
       // Handle the error
       document.getElementById('statusMessage').innerText = 'Invalid JSON: ' + error;
     }
+
+    updateRecipes();
+
 }
 
+function updateRecipes () {
+
+    let ingredients = []
+    document.querySelectorAll("#dataContainer>div>input").forEach(element => {
+        ingredients.push(element.value);
+    })
+    let url = `/recipe?ingredients=${ingredients.toString()}&must=${ingredients[0]}`
+    console.log(url);
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+
+            document.getElementById('recipes-container').innerText = ""
+            data["results"].forEach(element => {
+                listItem = document.createElement("li");
+                link = document.createElement("a");
+                
+                link.href = element["recipeUrl"];
+                link.innerText = element["recipeName"];
+                document.getElementById('recipes-container').appendChild(listItem);
+                listItem.appendChild(link);
+            });
+
+    })
+    .catch(error => console.error('Error:', error));
+}
    
 fetch('/read')
 .then(response => response.json())
@@ -36,5 +66,18 @@ fetch('/read')
     data = response1
     inventoryManager.data = data;
     inventoryManager.renderTable();
+    updateRecipes();
 });
-   
+
+var allowedStrings = ["string1", "string2", "string3"];
+
+$("#autocomplete").autocomplete({
+    source: allowedStrings
+}).on("autocompletechange", function(event, ui) {
+    if (!allowedStrings.includes($(this).val())) {
+        $(this).val('');
+        $('#errorMessage').text("Invalid input. Please choose from the suggested options.");
+    } else {
+        $('#errorMessage').text("");
+    }
+});

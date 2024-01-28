@@ -66,3 +66,10 @@ button {
 #dataContainer>div>* {
     box-shadow: 2px 2px 2px #0008;
 }
+#recipes-container {
+    border: solid gray 1px;
+    width: 519px;
+    min-height: 16px;
+    margin-top: 20px;
+    padding: 8px 24px;
+}
