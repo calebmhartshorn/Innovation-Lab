@@ -100,5 +100,20 @@ div#suggestionsPanel div:hover {
 }
 .autocomplete-suggestion {
     cursor: pointer;
-    /* Add other styling as needed */
+    border: 1px solid #d4d4d4;
+    border-radius: 10px;
+    padding: 5px 10px;
+    margin-bottom: 2px;
+    background-color: white;
+    display: inline-block;
+    width: auto;
+    max-width: 300px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.autocomplete-suggestion:hover {
+    background-color: #f0f0f0;
 }
