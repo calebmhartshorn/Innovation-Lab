@@ -1,29 +1,68 @@
+body {
+    background-color: rgb(235, 235, 235);
+    
+}
+
 .item .unique-items {
     display: none;
-   }
+}
    
-   .item.collapsed .unique-items {
+.item.collapsed .unique-items {
     display: block;
-   }
+}
 
-   .unique-items>div {
-    margin-left: 23px;
-    }
+.unique-items>div {
+    height: 21px;
+    display: flex;
+    align-items: stretch;
+    margin-bottom: -1px;
+}
+
+.unique-items>div>* {
+    margin-right: -1px;
+}
+#dataContainer>div:nth-child(-n+4) {
+margin-bottom: 8px;
+}
 
 #dataContainer>div>input {
-    min-width: 528px;
+    min-width: 518px;
     background-color: lightgray;
     outline: solid 1px gray;
     border: solid 1px rgb(255, 255, 255);
+    color: black;
+    min-height: 17px;
+    padding: 0;
+
 }
 
-   #export-container {
+#export-container {
     margin: 24px 0;
     display: flex;
-   }
-   .unique-items select {
-    min-height: 21px;
-   }
-   #jsonOutput {
-    min-width: 486px;
-   }
+}
+
+#jsonOutput {
+    min-width: 562px;
+    min-height: 200px;
+}
+button {
+    min-width: 24px;
+}
+.unique-items select {
+    padding: 0;
+}
+.unique-items input {
+    padding: 0;
+}
+#addSectionButton {
+    margin-bottom: 8px;
+}
+
+.unique-items {
+    margin-left: 23px;
+    box-shadow: 2px 2px 2px #0008;
+    width: 544px;
+}
+#dataContainer>div>* {
+    box-shadow: 2px 2px 2px #0008;
+}

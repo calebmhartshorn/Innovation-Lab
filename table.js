@@ -17,6 +17,13 @@ class InventoryManager {
       toggleButton.textContent = 'v';
       toggleButton.addEventListener('click', () => {
         itemDiv.classList.toggle('collapsed');
+        if (itemDiv.classList.contains('collapsed')) {
+          toggleButton.textContent = 'v';
+
+        } else {
+          toggleButton.textContent = '>';
+
+        }
       });
       itemDiv.appendChild(toggleButton);
  
@@ -101,6 +108,15 @@ class InventoryManager {
         uniqueItemDiv.appendChild(deleteButton);
       });
     });
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', this.exportData.bind(this));
+    })
+    document.querySelectorAll('button').forEach(input => {
+      input.addEventListener('click', this.exportData.bind(this));
+    })
+    document.querySelectorAll('select').forEach(input => {
+      input.addEventListener('change', this.exportData.bind(this));
+    })
   }
  
   addSection() {
@@ -124,10 +140,7 @@ class InventoryManager {
     this.renderTable();
   }
  
-  exportData() {
-    const jsonData = this.convertTableToJson();
-    document.getElementById('jsonOutput').value = JSON.stringify(jsonData, null, 2);
-  }
+
  
   convertTableToJson() {
     const jsonData = {
@@ -158,11 +171,16 @@ class InventoryManager {
  
     return jsonData;
   }
+
+  exportData() {
+    let jsonData = this.convertTableToJson();
+    document.getElementById('jsonOutput').value = JSON.stringify(jsonData, null, 2);
+    postTable()
+  }
  }
  data = {"inventory":[]}
 
  inventoryManager = new InventoryManager(data);
  inventoryManager.renderTable();
- document.getElementById('exportButton').addEventListener('click', () => inventoryManager.exportData());
  document.getElementById('addSectionButton').addEventListener('click', () => inventoryManager.addSection());
  

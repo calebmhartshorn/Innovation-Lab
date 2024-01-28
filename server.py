@@ -2,8 +2,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
 data = {}
-ip = "172.23.129.134"
-
+ip = "192.168.1.23"
+ip = "172.23.131.21"
 
 class WebServerHandler(BaseHTTPRequestHandler):
     

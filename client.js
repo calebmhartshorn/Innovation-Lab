@@ -1,15 +1,5 @@
 
-fetch('/read')
-    .then(response => response.json())
-    .then(response1 => {
-        // Convert the JSON data to a string and insert it into the dataContainer div
-        data = response1
-        console.log(JSON.stringify(data));
-        inventoryManager.data = data;
-        inventoryManager.renderTable();
-    });
-
- document.getElementById('exportButton').addEventListener('click', function() {
+function postTable () {
     const jsonInput = document.getElementById('jsonOutput');
    
     try {
@@ -36,5 +26,15 @@ fetch('/read')
       // Handle the error
       document.getElementById('statusMessage').innerText = 'Invalid JSON: ' + error;
     }
-   });
+}
+
+   
+fetch('/read')
+.then(response => response.json())
+.then(response1 => {
+    // Convert the JSON data to a string and insert it into the dataContainer div
+    data = response1
+    inventoryManager.data = data;
+    inventoryManager.renderTable();
+});
    
