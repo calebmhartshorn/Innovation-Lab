@@ -36,14 +36,15 @@ margin-bottom: 8px;
 
 }
 
-#export-container {
-    margin: 24px 0;
-    display: flex;
-}
 
-#jsonOutput {
+textarea {
     min-width: 562px;
-    min-height: 200px;
+    min-height: 100px;
+    display: block;
+    margin-bottom: 24px;
+}
+#scan-button {
+margin-bottom: 8px;
 }
 button {
     min-width: 24px;
@@ -70,6 +71,12 @@ button {
     border: solid gray 1px;
     width: 519px;
     min-height: 16px;
-    margin-top: 20px;
     padding: 8px 24px;
+    margin: 0;
+}
+#scan-button {
+    display: block;
+}
+h3 {
+    margin-bottom: 0;
 }

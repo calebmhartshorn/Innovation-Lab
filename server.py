@@ -1,11 +1,17 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 import requests
+import threading
 import json
+import random
+import string
 
 data = {}
+scan_results = {}
 ip = "192.168.1.23"
-ip = "172.23.129.18"
+#ip = "172.23.129.18"
+
+scanning = False
 
 class WebServerHandler(BaseHTTPRequestHandler):
     
@@ -28,6 +34,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'text/html')
                 self.set_common_headers()
                 self.wfile.write(b'Index file not found')
+
         elif self.path.endswith("/styles.css"):
             try:
                 with open('styles.css', 'r') as f:
@@ -109,22 +116,43 @@ class WebServerHandler(BaseHTTPRequestHandler):
             self.set_common_headers()
             self.wfile.write(json.dumps(json_data).encode())
 
+        elif self.path.endswith("/scanresults"):
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.set_common_headers()
+      
+            self.wfile.write(json.dumps(scan_results).encode())
+
     def do_POST(self):
-        global data
+        global data,scanning
+
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         post_data = post_data.decode('utf-8')
 
         if self.path.endswith("/update"):
             json_data = json.loads(post_data)
-
-            # Update data.json with the new data
             with open('data.json', 'w') as f:
                 json.dump(json_data, f)
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.set_common_headers()
             self.wfile.write(b'Data updated successfully')
+
+        elif self.path.endswith("/enablescan"):
+            scanning = True
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.set_common_headers()
+            print("Starting Scanning")
+
+        elif self.path.endswith("/disablescan"):
+            scanning = False
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.set_common_headers()
+            print("Stopping Scanning")
+
         else:
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
@@ -136,8 +164,20 @@ class WebServerHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.set_common_headers()
 
-
-
+def ocr_thread():
+    global scanning, scan_results
+    while True:
+        if not scanning:
+            continue
+        scan_results = {
+            "name": ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)),
+            "uniqueDescription": ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)),
+            "expirationDT": "",
+            "quantity": {
+                "amount": random.randint(0, 500),
+                "unit": ["Pints", "Grams", "Ounces", "Kg", "Units"][random.randint(0, 4)]
+            }
+        }
 
 def main():
     try:
@@ -150,4 +190,10 @@ def main():
         server.socket.close()
 
 if __name__ == '__main__':
+    
+    # Start the OCR thread
+    ocr_thread = threading.Thread(target=ocr_thread)
+    ocr_thread.start()
+
+    # Main server thread
     main()

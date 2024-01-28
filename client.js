@@ -38,7 +38,6 @@ function updateRecipes () {
         ingredients.push(element.value);
     })
     let url = `/recipe?ingredients=${ingredients.toString()}&must=${ingredients[0]}`
-    console.log(url);
 
     fetch(url)
     .then(response => response.json())
@@ -81,3 +80,31 @@ $("#autocomplete").autocomplete({
         $('#errorMessage').text("");
     }
 });
+
+document.getElementById("scan-checkbox").addEventListener("change", () => {
+    let enabled = document.getElementById("scan-checkbox").checked;
+    console.log(enabled);
+    if (enabled) {
+        fetch('/enablescan', {
+            method: 'POST',
+            body: '',
+        })
+    } else {
+        fetch('/disablescan', {
+            method: 'POST',
+            body: '',
+        }) 
+    }
+})
+
+setInterval(() => {
+
+    if (document.getElementById("scan-checkbox").checked) {
+        fetch('/scanresults')
+        .then(response => response.json())
+        .then(response => {
+            document.getElementById('scan-results').value = JSON.stringify(response);
+        })
+    }
+
+}, 500);

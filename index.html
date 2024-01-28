@@ -6,17 +6,21 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.12.4.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="shortcut icon" href="#">
+
 </head>
 <body>
+    <label style="display: inline;">Scan</label><input id="scan-checkbox" type="checkbox" style="display: inline;">
+    <textarea id="scan-results" readonly></textarea>
     <button id="addSectionButton">Add Section</button>
     <div id="dataContainer"></div>
     
     <h3>Recipes</h3>
     <ol id="recipes-container"></ol>
 
-    <div id="export-container">
+    <h3>JSON</h3>
+
     <textarea id="jsonOutput" readonly></textarea>
-    </div>
     <label id="statusMessage"></label>
 
 
