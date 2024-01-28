@@ -16,7 +16,7 @@ with open('ingredients.txt', 'r') as file:
 
 data = {}
 scan_results = {}
-ip = "192.168.1.23"
+ip = " 172.23.129.173"
 #ip = "172.23.129.18"
 
 scanning = False
@@ -185,19 +185,27 @@ def ocr_thread():
     while True:
         if scanning:
             if tog == 0:
-                cap = cv2.VideoCapture(1)# Restart the camera
+                cap = cv2.VideoCapture(0)# Restart the camera
                 tog = 1
             ret, frame = cap.read()
             if ret:
                 print("Scanning...")
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                text = pytesseract.image_to_string(gray)
+                #ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+                text = pytesseract.image_to_string(gray, lang='eng', config='--psm 11')
+                print(text)
                 captured_ingredients = [i.strip().lower() for i in re.split(',|\n', text) if i.strip().lower() in all_ingredients]
                 if captured_ingredients:
-                    scan_results = captured_ingredients
+                    scan_results = {"name":captured_ingredients[0]}
                     print(f"Captured ingredient: {scan_results}")
                 else:
-                    print(f"Captured non ingredient text: {text}")
+                    scan_results = {}
+                
+                cv2.imshow('Camera Frame', gray)
+                # Break the loop if 'q' is pressed
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
         else:
             if tog == 1:# Turn off camera once
                 cap.release()

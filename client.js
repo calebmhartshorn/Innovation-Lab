@@ -108,3 +108,19 @@ setInterval(() => {
     }
 
 }, 500);
+
+document.getElementById("add-item").addEventListener("click", () => {
+    console.log(document.getElementById('scan-results').value);
+
+    if (!["", "{}"].includes(document.getElementById('scan-results').value)) {
+        console.log("Result Added");
+        inventoryManager.addUnique(
+            JSON.parse(document.getElementById('scan-results').value)["name"], 
+            {
+                uniqueDescription: '', 
+                expirationDT: '', 
+                quantity: {amount: 1, unit: ''}
+            }
+        );
+    }
+})

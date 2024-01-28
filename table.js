@@ -141,6 +141,22 @@ class InventoryManager {
   }
  
 
+  addUnique(name, uniqueObject) {
+    var itemExists = this.data.inventory.some(function(item) {
+       if(item.name === name) {
+         item.unique.push(uniqueObject);
+         return true;
+       }
+    });
+   
+    if(!itemExists) {
+      this.data.inventory.push({
+         name: name,
+         unique: [uniqueObject]
+       });
+    }
+    this.renderTable();
+   }
  
   convertTableToJson() {
     const jsonData = {
