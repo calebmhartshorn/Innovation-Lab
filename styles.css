@@ -83,3 +83,22 @@ h3 {
 #add-item {
     margin-bottom: 8px;
 }
+div#suggestionsPanel {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    background: white;
+    z-index: 100;
+}
+
+div#suggestionsPanel div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+div#suggestionsPanel div:hover {
+    background-color: #f0f0f0;
+}
+.autocomplete-suggestion {
+    cursor: pointer;
+    /* Add other styling as needed */
+}

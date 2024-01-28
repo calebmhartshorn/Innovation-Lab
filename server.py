@@ -81,6 +81,20 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'text/html')
                 self.set_common_headers()
                 self.wfile.write(b'JS file not found')
+                
+        elif self.path.endswith("/autocomplete.js"):
+            try:
+                with open('autocomplete.js', 'r') as f:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/javascript')
+                    self.set_common_headers()
+                    self.wfile.write(f.read().encode())
+            except FileNotFoundError:
+                self.send_response(404)
+                self.send_header('Content-type', 'text/html')
+                self.set_common_headers()
+                self.wfile.write(b'JS file not found')
+
         elif self.path.endswith("/read"):
             with open('data.json', 'r') as f:
                 data = json.load(f)
@@ -97,7 +111,11 @@ class WebServerHandler(BaseHTTPRequestHandler):
             
             # Now you can access the parameters as a dictionary
             ingredients =          params.get('ingredients',          ['[]'])[0].replace("[", "").replace("]", "").split(",")
-            mandatoryIngredients = [params.get('must', [])[0]]
+            mandatoryIngredients = params.get('must', [])
+            if mandatoryIngredients:
+                mandatoryIngredients = [mandatoryIngredients[0]]
+            else:
+                mandatoryIngredients = []  # Set it to an empty list if 'must' is not in the query
 
             url = 'https://realfood.tesco.com/api/ingredientsearch/getrecipes'
             
@@ -130,6 +148,19 @@ class WebServerHandler(BaseHTTPRequestHandler):
             self.set_common_headers()
       
             self.wfile.write(json.dumps(scan_results).encode())
+        elif self.path.endswith("/ingredients"):
+            try:
+                with open('ingredients.txt', 'r') as file:
+                    ingredients = [line.strip() for line in file.readlines()]
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.set_common_headers()
+                self.wfile.write(json.dumps(ingredients).encode())
+            except FileNotFoundError:
+                self.send_response(404)
+                self.send_header('Content-type', 'text/html')
+                self.set_common_headers()
+                self.wfile.write(b'Ingredients file not found')
 
     def do_POST(self):
         global data,scanning

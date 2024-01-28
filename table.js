@@ -125,7 +125,14 @@ class InventoryManager {
       unique: []
     });
     this.renderTable();
-  }
+    }
+  addItem(name) {
+     this.data.inventory.push({
+            name: name,
+            unique: []
+        });
+        this.renderTable();
+    }
  
   addUniqueItem(categoryName) {
     const category = this.data.inventory.find(item => item.name === categoryName);
@@ -194,9 +201,9 @@ class InventoryManager {
     postTable()
   }
  }
- data = {"inventory":[]}
+data = { "inventory": [] }
+
 
  inventoryManager = new InventoryManager(data);
  inventoryManager.renderTable();
- document.getElementById('addSectionButton').addEventListener('click', () => inventoryManager.addSection());
- 
+document.getElementById('addSectionButton').addEventListener('click', () => inventoryManager.addSection());
