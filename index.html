@@ -1,19 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="script.js" defer></script>
+    <title>JSON Data Editor</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
-<body id="body">
-    <h1>Web App Demo</h1>
-        <input type="text" id="message">
-        <button id="postBtn">Post</button> 
-        <br></br>
-        <button id="getBtn">Get</button> 
-        <br></br>
-        <button id="clearBtn">Clear</button>
+<body>
+    <button id="readButton">Read Data</button>
+    <div id="dataContainer"></div>
 
+    <textarea id="jsonInput" rows="10" cols="30"></textarea>
+    <button id="updateButton">Update Data</button>
+    <div id="statusMessage"></div>
+
+    <script src="client.js"></script>
 </body>
 </html>
