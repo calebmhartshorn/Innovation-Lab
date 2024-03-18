@@ -1,3 +1,7 @@
+### Repo Structure
+All outdated code from last semester has been moved into `old`.
+All current, ongoing work exists in the root directory.
+
 ### Client and Server Info
 The physical scanner device, running on a RPi, hosts an HTTP webserver allowing clients to connect directly via local wlan IP address on port 8080.
 For example, if the RPi's local IP address was 192.168.0.14, you could access the webclient via http://192.168.0.14:8080. Note this does not work on networks with certain firewalls/restrictions (noteably inlcuding Bath Spa `eduroam` and guest networks). It is expected to work on most home networks.
