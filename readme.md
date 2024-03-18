@@ -1,5 +1,5 @@
 ### Repo Structure
-All outdated code from last semester has been moved into `old`.
+All outdated code from last semester has been moved into `_Outdated`.
 All current, ongoing work exists in the root directory.
 
 ### Client and Server Info
