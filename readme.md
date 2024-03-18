@@ -1,6 +1,12 @@
 ### Repo Structure
-All outdated code from last semester has been moved into `_Outdated`.
-All current, ongoing work exists in the root directory.
+All outdated code from last semester has been moved into `/_Outdated`.
+
+All current, ongoing work exists in the root directory:
+- `/Server` Holds all server-side files for the Raspberry Pi
+- `/Client` Holds all client-side web app files
+- `/CAD` Holds any 3D model files for case, etc.
+- `/Marketing` Holds all marketing breifs, logo, website files, etc.
+
 
 ### Client and Server Info
 The physical scanner device, running on a RPi, hosts an HTTP webserver allowing clients to connect directly via local wlan IP address on port 8080.
