@@ -8,26 +8,26 @@
     "expiration_days": 180
   },
   {
-    "barcode": "40860191",
+    "barcode": "Salmon Fillets",
     "name": "Heinz Baked Beans",
     "generic_name": "Beans",
-    "quantity_amount": 880,
-    "quantity_unit": "grams",
-    "expiration_days": 180
+    "quantity_amount": 10,
+    "quantity_unit": "fillets",
+    "expiration_days": 15
   },
   {
     "barcode": "40860192",
     "name": "Chicken Breasts",
     "generic_name": "Beans",
-    "quantity_amount": 880,
+    "quantity_amount": 50,
     "quantity_unit": "grams",
-    "expiration_days": -1
+    "expiration_days": 12
   },
   {
     "barcode": "5054402100030",
     "name": "Test Item",
     "generic_name": "Test Item",
-    "quantity_amount": 1,
+    "quantity_amount": 3,
     "quantity_unit": "grams",
     "expiration_days": -1
   }
