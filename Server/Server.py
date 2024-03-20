@@ -129,4 +129,5 @@ with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
     barcode_scanner_thread.start()
 
     http_server_thread.join()
+    httpd.shutdown()
     barcode_scanner_thread.join()
