@@ -17,8 +17,21 @@ if os.path.exists('items.json'):
         items = {item['barcode']: item for item in json.loads(items_data)}
     print("Loaded Ingredients")
 else:
-    print("Error: 'items.txt' file not found.")
+    print("Error: 'items.json' file not found.")
     items = {}
+
+if os.path.exists('barcodes.json'):
+    with open('barcodes.json', 'r') as f:
+        barcodes_data = f.read()
+    barcodes = {}
+    for item in json.loads(barcodes_data):
+        for barcode, data in item.items():
+            barcodes[int(barcode)] = data
+    print("Loaded Barcodes")
+else:
+    print("Error: 'barcodes.json' file not found.")
+    barcodes = {}
+
 
 scanned_barcodes = {}
 
