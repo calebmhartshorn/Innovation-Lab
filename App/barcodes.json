@@ -79,5 +79,14 @@
       "quantity_unit": "grams",
       "expiration_days": -1
     }
+  },
+  {
+    "18366": {
+      "name": "LCD Screen",
+      "generic_name": "LCD",
+      "quantity_amount": 0,
+      "quantity_unit": "grams",
+      "expiration_days": -1
+    }
   }
 ]

@@ -71,7 +71,7 @@ def add_quantity(barcode):
             "expiration_days": item_data["expiration_days"]
         }
         items.append(new_item)
-        print("Added new item to items.json found in barcodes.json
+        print("Added new item to items.json found in barcodes.json")
         print(f"Barcode: {barcode}")
         print(f"Name: {item_data['name']}")
         print(f"New Quantity: {new_item['quantity_amount']} {new_item['quantity_unit']}")
@@ -114,6 +114,7 @@ def decode_barcode_from_webcam():
                     item_data = barcodes[int(barcode)]
                     # Uses the item_data as needed
                     print(f"Barcode {barcode} found: {item_data}")
+                    add_quantity(barcode)
                 else:
                     print(f"Barcode {barcode} not found in the database.")
 
