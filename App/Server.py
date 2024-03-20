@@ -65,17 +65,17 @@ def decode_barcode_from_webcam():
         for obj in decoded_objects:
             barcode = obj.data.decode('utf-8')
 
-            # 15 times seems good for how quick it scans
+            # 10 times seems good for how quick it scans
             if barcode in scanned_barcodes:
                 scanned_barcodes[barcode] += 1
             else:
                 scanned_barcodes[barcode] = 1
 
-            if scanned_barcodes[barcode] == 15:
-                time.sleep(1)  # Wait for 1 second
+            if scanned_barcodes[barcode] == 10:
+                time.sleep(2)  # Waits for 2 seconds
                 scanned_barcodes[barcode] = 1
 
-                # Checks if the barcode is in the barcodes dictionary
+                # Checks if the barcode is in the barcodes list
                 if int(barcode) in barcodes:
                     item_data = barcodes[int(barcode)]
                     # Uses the item_data as needed
