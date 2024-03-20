@@ -18,7 +18,7 @@
   {
     "barcode": "40860192",
     "name": "Chicken Breasts",
-    "generic_name": "Beans",
+    "generic_name": "breasts",
     "quantity_amount": 50,
     "quantity_unit": "grams",
     "expiration_days": 12
