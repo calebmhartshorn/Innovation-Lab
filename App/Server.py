@@ -51,8 +51,10 @@ def add_quantity(barcode):
 
 def decode_barcode_from_webcam():
     cap = cv2.VideoCapture(0)
+
     while True:
         ret, frame = cap.read()
+
         if not ret:
             print("Failed to capture image")
             break
@@ -62,6 +64,7 @@ def decode_barcode_from_webcam():
 
         for obj in decoded_objects:
             barcode = obj.data.decode('utf-8')
+
             # 15 times seems good for how quick it scans
             if barcode in scanned_barcodes:
                 scanned_barcodes[barcode] += 1
@@ -71,14 +74,23 @@ def decode_barcode_from_webcam():
             if scanned_barcodes[barcode] == 15:
                 time.sleep(1)  # Wait for 1 second
                 scanned_barcodes[barcode] = 1
-                cv2.rectangle(frame, (obj.rect.left, obj.rect.top),
-                              (obj.rect.left + obj.rect.width, obj.rect.top + obj.rect.height),
-                              (0, 255, 0), 2)
-                cv2.putText(frame, barcode, (obj.rect.left, obj.rect.top - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                add_quantity(barcode)
+
+                # Checks if the barcode is in the barcodes dictionary
+                if int(barcode) in barcodes:
+                    item_data = barcodes[int(barcode)]
+                    # Uses the item_data as needed
+                    print(f"Barcode {barcode} found: {item_data}")
+                else:
+                    print(f"Barcode {barcode} not found in the database.")
+
+            cv2.rectangle(frame, (obj.rect.left, obj.rect.top),
+                          (obj.rect.left + obj.rect.width, obj.rect.top + obj.rect.height),
+                          (0, 255, 0), 2)
+            cv2.putText(frame, barcode, (obj.rect.left, obj.rect.top - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
         cv2.imshow('Barcode Scanner', frame)
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
