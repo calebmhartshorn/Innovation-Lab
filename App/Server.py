@@ -48,7 +48,8 @@ def add_quantity(barcode):
     item_found = False
 
     for item in items:
-        if item['barcode'] == barcode:
+        if int(item['barcode']) == barcode_int:
+            print("Found item in items.json")
             print(f"Barcode: {barcode}")
             print(f"Name: {item['name']}")
             item['quantity_amount'] += 1
@@ -70,6 +71,7 @@ def add_quantity(barcode):
             "expiration_days": item_data["expiration_days"]
         }
         items.append(new_item)
+        print("Added new item to items.json found in barcodes.json
         print(f"Barcode: {barcode}")
         print(f"Name: {item_data['name']}")
         print(f"New Quantity: {new_item['quantity_amount']} {new_item['quantity_unit']}")
@@ -191,6 +193,6 @@ with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
     http_server_thread.start()
     barcode_scanner_thread.start()
 
-    http_server_thread.join()
-    httpd.shutdown()
     barcode_scanner_thread.join()
+    httpd.shutdown()
+    http_server_thread.join()
