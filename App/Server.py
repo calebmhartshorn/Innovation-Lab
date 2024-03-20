@@ -11,8 +11,8 @@ import threading
 PORT = 8000
 
 # Loads items from a file called items.txt
-if os.path.exists('items.txt'):
-    with open('items.txt', 'r') as f:
+if os.path.exists('items.json'):
+    with open('items.json', 'r') as f:
         items_data = f.read()
         items = {item['barcode']: item for item in json.loads(items_data)}
     print("Loaded Ingredients")
@@ -87,6 +87,12 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-type', 'text/javascript')
                 self.end_headers()
                 with open('client.js', 'rb') as f:
+                    self.wfile.write(f.read())
+            elif self.path == '/styles.css':
+                self.send_response(200)
+                self.send_header('Content-type', 'text/css')
+                self.end_headers()
+                with open('styles.css', 'rb') as f:
                     self.wfile.write(f.read())
             elif self.path == '/inventory':
                 print("Received request for inventory data")

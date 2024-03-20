@@ -101,7 +101,7 @@ function displayInventory(inventoryData) {
 
     inventorySectionDiv.appendChild(productNameDiv);
     inventorySectionDiv.appendChild(productQuantityDiv);
-    inventorySectionDiv.appendChild(productExpirationDiv);
+    //inventorySectionDiv.appendChild(productExpirationDiv);
   });
 }
 
