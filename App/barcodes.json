@@ -3,7 +3,7 @@
     "90131776": {
       "name": "Branston",
       "generic_name": "Beans",
-      "quantity_amount": 440,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": 180
     }
@@ -12,7 +12,7 @@
     "90131783": {
       "name": "Heinz Baked Beans",
       "generic_name": "Beans",
-      "quantity_amount": 880,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": 180
     }
@@ -21,7 +21,7 @@
     "90131790": {
       "name": "Chicken Breasts",
       "generic_name": "Chicken",
-      "quantity_amount": 500,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": -1
     }
@@ -30,7 +30,7 @@
     "90131806": {
       "name": "Mince Beef",
       "generic_name": "Beef",
-      "quantity_amount": 500,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": -1
     }
@@ -39,7 +39,7 @@
     "90131813": {
       "name": "Bell Peppers",
       "generic_name": "Peppers",
-      "quantity_amount": 100,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": 5
     }
@@ -48,7 +48,7 @@
     "90131820": {
       "name": "Long Grain Rice",
       "generic_name": "Rice",
-      "quantity_amount": 500,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": 180
     }
@@ -57,7 +57,7 @@
     "90131837": {
       "name": "Spaghetti",
       "generic_name": "Pasta",
-      "quantity_amount": 500,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": 180
     }
@@ -66,7 +66,7 @@
     "90131844": {
       "name": "Penne Pasta",
       "generic_name": "Pasta",
-      "quantity_amount": 500,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": 180
     }
@@ -75,7 +75,7 @@
     "90131851": {
       "name": "Greek Yoghurt",
       "generic_name": "Yoghurt",
-      "quantity_amount": 500,
+      "quantity_amount": 0,
       "quantity_unit": "grams",
       "expiration_days": -1
     }
