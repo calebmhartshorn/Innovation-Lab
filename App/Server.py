@@ -44,16 +44,40 @@ def add_quantity(barcode):
     with open('items.json', 'r') as f:
         items = json.load(f)
 
+    barcode_int = int(barcode)
+    item_found = False
+
     for item in items:
         if item['barcode'] == barcode:
             print(f"Barcode: {barcode}")
             print(f"Name: {item['name']}")
             item['quantity_amount'] += 1
             print(f"New Quantity: {item['quantity_amount']} {item['quantity_unit']}")
+            item_found = True
+
             with open('items.json', 'w') as f:
                 json.dump(items, f, indent=2)
             break
-    else:
+
+    if not item_found and barcode_int in barcodes:
+        item_data = barcodes[barcode_int]
+        new_item = {
+            "barcode": barcode,
+            "name": item_data["name"],
+            "generic_name": item_data["generic_name"],
+            "quantity_amount": 1,
+            "quantity_unit": item_data["quantity_unit"],
+            "expiration_days": item_data["expiration_days"]
+        }
+        items.append(new_item)
+        print(f"Barcode: {barcode}")
+        print(f"Name: {item_data['name']}")
+        print(f"New Quantity: {new_item['quantity_amount']} {new_item['quantity_unit']}")
+
+        with open('items.json', 'w') as f:
+            json.dump(items, f, indent=2)
+
+    if not item_found and barcode_int not in barcodes:
         print(f"Barcode: {barcode}")
         print("This item is not in the database.")
 
