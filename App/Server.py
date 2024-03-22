@@ -46,13 +46,14 @@ def add_quantity(barcode):
 
     barcode_int = int(barcode)
     item_found = False
+    item_data = barcodes[barcode_int]
 
     for item in items:
         if int(item['barcode']) == barcode_int:
             print("Found item in items.json")
             print(f"Barcode: {barcode}")
             print(f"Name: {item['name']}")
-            item['quantity_amount'] += 1
+            item['quantity_amount'] += item_data["quantity_amount"]
             print(f"New Quantity: {item['quantity_amount']} {item['quantity_unit']}")
             item_found = True
 
@@ -61,7 +62,6 @@ def add_quantity(barcode):
             break
 
     if not item_found and barcode_int in barcodes:
-        item_data = barcodes[barcode_int]
         new_item = {
             "barcode": barcode,
             "name": item_data["name"],
@@ -112,6 +112,7 @@ def decode_barcode_from_webcam():
                 # Checks if the barcode is in the barcodes dictionary
                 if int(barcode) in barcodes:
                     item_data = barcodes[int(barcode)]
+                    add_quantity(barcode)
                     # Uses the item_data as needed
                     print(f"Barcode {barcode} found: {item_data}")
                     add_quantity(barcode)
