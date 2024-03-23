@@ -48,16 +48,35 @@ def add_quantity(barcode):
     barcode_int = int(barcode)
     item_found = False
     item_data = barcodes[barcode_int]
+    scanned_date = datetime.now().strftime("%Y-%m-%d")
 
-    for item in items:
+    for i, item in enumerate(items):
         if int(item['barcode']) == barcode_int:
-            print("Found item in items.json")
-            print(f"Barcode: {barcode}")
-            print(f"Name: {item['name']}")
-            item['quantity_amount'] += item_data["quantity_amount"]
-            print(f"New Quantity: {item['quantity_amount']} {item['quantity_unit']}")
-            print(f"Scanned Date: {item['created_date']}")
             item_found = True
+            if 'entries' not in item:
+                item['entries'] = []
+
+            entry_found = False
+            for entry in item['entries']:
+                if entry['created_date'] == scanned_date:
+                    entry_found = True
+                    entry['quantity_amount'] += item_data["quantity_amount"]
+                    print(f"Found existing entry for barcode {barcode} on {scanned_date}")
+                    print(f"Name: {item['name']}")
+                    print(f"New Quantity: {entry['quantity_amount']} {entry['quantity_unit']}")
+                    break
+
+            if not entry_found:
+                new_entry = {
+                    "quantity_amount": item_data["quantity_amount"],
+                    "quantity_unit": item_data["quantity_unit"],
+                    "expiration_days": item_data["expiration_days"],
+                    "created_date": scanned_date
+                }
+                item['entries'].append(new_entry)
+                print(f"Added new entry for barcode {barcode} on {scanned_date}")
+                print(f"Name: {item['name']}")
+                print(f"New Quantity: {new_entry['quantity_amount']} {new_entry['quantity_unit']}")
 
             with open('items.json', 'w') as f:
                 json.dump(items, f, indent=2)
@@ -68,17 +87,19 @@ def add_quantity(barcode):
             "barcode": barcode,
             "name": item_data["name"],
             "generic_name": item_data["generic_name"],
-            "quantity_amount": 1,
-            "quantity_unit": item_data["quantity_unit"],
-            "expiration_days": item_data["expiration_days"],
-            "created_date": datetime.now().strftime("%Y-%m-%d")
+            "entries": [
+                {
+                    "quantity_amount": item_data["quantity_amount"],
+                    "quantity_unit": item_data["quantity_unit"],
+                    "expiration_days": item_data["expiration_days"],
+                    "created_date": scanned_date
+                }
+            ]
         }
         items.append(new_item)
-        print("Added new item to items.json found in barcodes.json")
-        print(f"Barcode: {barcode}")
+        print(f"Added new item for barcode {barcode} on {scanned_date}")
         print(f"Name: {item_data['name']}")
-        print(f"New Quantity: {new_item['quantity_amount']} {new_item['quantity_unit']}")
-        print(f"Scanned Date: {new_item['created_date']}")
+        print(f"New Quantity: {item_data['quantity_amount']} {item_data['quantity_unit']}")
 
         with open('items.json', 'w') as f:
             json.dump(items, f, indent=2)
