@@ -56,6 +56,7 @@ def add_quantity(barcode):
             print(f"Name: {item['name']}")
             item['quantity_amount'] += item_data["quantity_amount"]
             print(f"New Quantity: {item['quantity_amount']} {item['quantity_unit']}")
+            print(f"Scanned Date: {item['created_date']}")
             item_found = True
 
             with open('items.json', 'w') as f:
@@ -70,7 +71,7 @@ def add_quantity(barcode):
             "quantity_amount": 1,
             "quantity_unit": item_data["quantity_unit"],
             "expiration_days": item_data["expiration_days"],
-            "created_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "created_date": datetime.now().strftime("%Y-%m-%d")
         }
         items.append(new_item)
         print("Added new item to items.json found in barcodes.json")
