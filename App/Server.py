@@ -69,7 +69,7 @@ def add_quantity(barcode):
             "generic_name": item_data["generic_name"],
             "quantity_amount": 1,
             "quantity_unit": item_data["quantity_unit"],
-            "expiration_days": item_data["expiration_days"]
+            "expiration_days": item_data["expiration_days"],
             "created_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         items.append(new_item)
