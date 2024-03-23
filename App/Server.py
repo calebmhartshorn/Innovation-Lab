@@ -7,6 +7,7 @@ from pyzbar.pyzbar import decode
 import time
 import os
 import threading
+from datetime import datetime
 
 PORT = 8000
 
@@ -69,12 +70,14 @@ def add_quantity(barcode):
             "quantity_amount": 1,
             "quantity_unit": item_data["quantity_unit"],
             "expiration_days": item_data["expiration_days"]
+            "created_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         items.append(new_item)
         print("Added new item to items.json found in barcodes.json")
         print(f"Barcode: {barcode}")
         print(f"Name: {item_data['name']}")
         print(f"New Quantity: {new_item['quantity_amount']} {new_item['quantity_unit']}")
+        print(f"Scanned Date: {new_item['created_date']}")
 
         with open('items.json', 'w') as f:
             json.dump(items, f, indent=2)
