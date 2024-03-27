@@ -1,3 +1,3 @@
 ### App
 
-Keep all files here for Raspberry Pi development here (server and client).
+Keep all files here for app development here (server and client).

@@ -80,7 +80,7 @@ header {
         }
 
 #inventory-section {
-    margin: 80px 0;
+    margin: 40px 0;
     padding: 0 16px;
     line-height: 2rem;
     font-size: 1.25rem;
@@ -105,7 +105,4 @@ header {
     .product-quantity {
         padding: 4px 12px;
         text-align: right;
-    }
-    #inventory-section>#use-in-0-days {
-        display: none;
     }

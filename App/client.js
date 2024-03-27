@@ -62,47 +62,67 @@ async function updateInventory(jsonData) {
 }
 
 function displayInventory(inventoryData) {
-  const inventorySectionDiv = document.getElementById('inventory-section').querySelector('div');
-  inventorySectionDiv.innerHTML = '';
+  const use_in_0_days = document.getElementById('use-in-0-days')
+  const use_in_1_days = document.getElementById('use-in-1-days')
+  const use_in_3_days = document.getElementById('use-in-3-days')
+  const use_in_7_days = document.getElementById('use-in-7-days')
 
-  // Sort items based on expiration_days in ascending order
-  const sortedItems = inventoryData.sort((a, b) => {
-    if (a.expiration_days === -1 && b.expiration_days === -1) {
-      // If both are non-expirable, it sorts them alphabetically
-      return a.name.localeCompare(b.name);
-    } else if (a.expiration_days === -1) {
-      // If a is non-expirable, it places it after expirable items
-      return 1;
-    } else if (b.expiration_days === -1) {
-      // If b is non-expirable, it places it after expirable items
-      return -1;
-    } else {
-      // Sorts expirable items based on expiration_days
-      return a.expiration_days - b.expiration_days;
-    }
-  });
+  use_in_0_days.innerHTML = '';
+  use_in_1_days.innerHTML = '';
+  use_in_3_days.innerHTML = '';
+  use_in_7_days.innerHTML = '';
 
-  sortedItems.forEach(item => {
-    const productNameDiv = document.createElement('div');
-    productNameDiv.classList.add('product-name');
-    productNameDiv.textContent = item.name;
+  // Convert the object into an array of items
+  const items = Object.values(inventoryData);
 
-    const productQuantityDiv = document.createElement('div');
-    productQuantityDiv.classList.add('product-quantity');
-    productQuantityDiv.textContent = `${item.quantity_amount} ${item.quantity_unit}`;
+  items.forEach((element, i, arr)=>{
+    console.log(element.name)
+    element.scans.forEach((scan, i, arr)=>{
+      daysLeft = calculateDaysLeft(scan, element.shelf_life)
+      console.log(daysLeft)
+      
+      let productNameDiv = document.createElement('div');
+      productNameDiv.classList.add('product-name');
+      productNameDiv.textContent = element.name;
+  
+      let productQuantityDiv = document.createElement('div');
+      productQuantityDiv.classList.add('product-quantity');
+      productQuantityDiv.textContent = `${element.size} ${element.size_units}`;
+      
+      let div = use_in_0_days;
 
-    const productExpirationDiv = document.createElement('div');
-    productExpirationDiv.classList.add('product-expiration');
-    if (item.expiration_days === -1) {
-      productExpirationDiv.textContent = 'Non-expirable';
-    } else {
-      productExpirationDiv.textContent = `Expires in ${item.expiration_days} days`;
-    }
+      if (daysLeft >= 7) {
+        div = use_in_7_days;
+      } else if (daysLeft >= 3) {
+        div = use_in_3_days;
+      } else if (daysLeft >= 1) {
+        div = use_in_1_days;
+      }
 
-    inventorySectionDiv.appendChild(productNameDiv);
-    inventorySectionDiv.appendChild(productQuantityDiv);
-    //inventorySectionDiv.appendChild(productExpirationDiv);
-  });
+      div.appendChild(productNameDiv);
+      div.appendChild(productQuantityDiv);
+    });
+  })
+}
+
+function calculateDaysLeft(dateString, shelfLife) {
+  // Parse the given date string into a Date object
+  const startDate = new Date(dateString);
+  
+  // Calculate the expiration date by adding the shelf life to the start date
+  const expirationDate = new Date(startDate);
+  expirationDate.setDate(startDate.getDate() + shelfLife);
+
+  // Get the current date
+  const currentDate = new Date();
+
+  // Calculate the difference in milliseconds between the expiration date and the current date
+  const differenceMs = expirationDate - currentDate;
+
+  // Convert milliseconds to days (1 day = 24 * 60 * 60 * 1000 milliseconds)
+  const daysLeft = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
+
+  return daysLeft;
 }
 
 // Call the fetchInventoryData function
