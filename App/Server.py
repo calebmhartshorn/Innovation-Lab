@@ -10,91 +10,46 @@ import threading
 from datetime import datetime
 
 PORT = 8000
+inventory = {}
 
-# Loads items from a file called items.txt
 if os.path.exists('inventory.json'):
     with open('inventory.json', 'r') as f:
-        items = json.load(f)
-    print("Loaded Ingredients")
+        inventory = json.load(f)
+    print("Loaded Inventory")
 else:
-    print("Error: 'items.json' file not found.")
-    items = {}
-
-
-
+    print("'inventory.json' file not found. Creating a new one.")
+    inventory = {}
 
 scanned_barcodes = {}
-
-def run_barcode_scanner():
-    decode_barcode_from_webcam()
-import json
+print(inventory)
 
 def add_quantity(barcode):
-    with open('items.json', 'r') as f:
-        items = json.load(f)
-
-    barcode_int = int(barcode)
-    item_found = False
-    item_data = barcodes[barcode_int]
     scanned_date = datetime.now().strftime("%Y-%m-%d")
-
-    for i, item in enumerate(items):
-        if int(item['barcode']) == barcode_int:
-            item_found = True
-            if 'entries' not in item:
-                item['entries'] = []
-
-            entry_found = False
-            for entry in item['entries']:
-                if entry['created_date'] == scanned_date:
-                    entry_found = True
-                    entry['quantity_amount'] += item_data["quantity_amount"]
-                    print(f"Found existing entry for barcode {barcode} on {scanned_date}")
-                    print(f"Name: {item['name']}")
-                    print(f"New Quantity: {entry['quantity_amount']} {entry['quantity_unit']}")
-                    break
-
-            if not entry_found:
-                new_entry = {
-                    "quantity_amount": item_data["quantity_amount"],
-                    "quantity_unit": item_data["quantity_unit"],
-                    "expiration_days": item_data["expiration_days"],
-                    "created_date": scanned_date
-                }
-                item['entries'].append(new_entry)
-                print(f"Added new entry for barcode {barcode} on {scanned_date}")
-                print(f"Name: {item['name']}")
-                print(f"New Quantity: {new_entry['quantity_amount']} {new_entry['quantity_unit']}")
-
-            with open('items.json', 'w') as f:
-                json.dump(items, f, indent=2)
-            break
-
-    if not item_found and barcode_int in barcodes:
-        new_item = {
-            "barcode": barcode,
-            "name": item_data["name"],
-            "generic_name": item_data["generic_name"],
-            "entries": [
-                {
-                    "quantity_amount": item_data["quantity_amount"],
-                    "quantity_unit": item_data["quantity_unit"],
-                    "expiration_days": item_data["expiration_days"],
-                    "created_date": scanned_date
-                }
-            ]
+    barcode = str(barcode)
+    if barcode in inventory:
+        inventory_entry = inventory[barcode]
+        inventory_entry['scans'].append(scanned_date)
+        
+        if inventory_entry['name'] == "Unknown":
+            print(f"Barcode {barcode} found, but the name is unknown.")
+        else:
+            print(f"Barcode {barcode} ({inventory_entry['name']}) found.")
+        
+        inventory_entry['size'] += 1
+        print(f"Added one size for {inventory_entry['name']}. New size: {inventory_entry['size']}")
+    else:
+        inventory[barcode] = {
+            "name": "Unknown",
+            "generic_name": "Unknown",
+            "size": 1,
+            "size_units": "Unit",
+            "shelf_life": 7,
+            "scans": [scanned_date]
         }
-        items.append(new_item)
-        print(f"Added new item for barcode {barcode} on {scanned_date}")
-        print(f"Name: {item_data['name']}")
-        print(f"New Quantity: {item_data['quantity_amount']} {item_data['quantity_unit']}")
+        print(f"Barcode {barcode} added with unknown name and size 1.")
 
-        with open('items.json', 'w') as f:
-            json.dump(items, f, indent=2)
-
-    if not item_found and barcode_int not in barcodes:
-        print(f"Barcode: {barcode}")
-        print("This item is not in the database.")
+    with open('inventory.json', 'w') as f:
+        json.dump(inventory, f, indent=2)
 
 def decode_barcode_from_webcam():
     cap = cv2.VideoCapture(0)
@@ -112,29 +67,30 @@ def decode_barcode_from_webcam():
         for obj in decoded_objects:
             barcode = obj.data.decode('utf-8')
 
-            # 15 times seems good for how quick it scans
-            if barcode in scanned_barcodes:
-                scanned_barcodes[barcode] += 1
+            try:
+                barcode_int = int(barcode)
+            except ValueError:
+                print(f"Invalid barcode: {barcode}")
+                continue
+
+            if barcode_int in scanned_barcodes:
+                scanned_barcodes[barcode_int] += 1
             else:
-                scanned_barcodes[barcode] = 1
+                scanned_barcodes[barcode_int] = 1
 
-            if scanned_barcodes[barcode] == 15:
-                time.sleep(1)  # Wait for 1 second
-                scanned_barcodes[barcode] = 1
+            if scanned_barcodes[barcode_int] == 15:
+                time.sleep(1)
+                scanned_barcodes[barcode_int] = 1
 
-                # Checks if the barcode is in the barcodes dictionary
-                if int(barcode) in barcodes:
-                    item_data = barcodes[int(barcode)]
-                    add_quantity(barcode)
-                    # Uses the item_data as needed
-                    print(f"Barcode {barcode} found: {item_data}")
-                else:
-                    print(f"Barcode {barcode} not found in the database.")
+                try:
+                    add_quantity(barcode_int)
+                except Exception as e:
+                    print(f"Error adding barcode to inventory: {e}")
 
             cv2.rectangle(frame, (obj.rect.left, obj.rect.top),
                           (obj.rect.left + obj.rect.width, obj.rect.top + obj.rect.height),
                           (0, 255, 0), 2)
-            cv2.putText(frame, barcode, (obj.rect.left, obj.rect.top - 10),
+            cv2.putText(frame, str(barcode_int), (obj.rect.left, obj.rect.top - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
         cv2.imshow('Barcode Scanner', frame)
@@ -147,8 +103,8 @@ def decode_barcode_from_webcam():
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        global items
-        print("Recieved")
+        global inventory
+        print("Received GET request")
         try:
             if self.path == '/':
                 self.send_response(200)
@@ -173,8 +129,7 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
-                inventory_data = json.dumps(items).encode()
-                print(inventory_data)
+                inventory_data = json.dumps(inventory).encode()
                 print(f"Sending inventory data: {inventory_data}")
                 self.wfile.write(inventory_data)
             else:
@@ -188,9 +143,9 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             if self.path == '/update-inventory':
                 content_length = int(self.headers['Content-Length'])
                 post_data = self.rfile.read(content_length)
-                updated_items = json.loads(post_data.decode('utf-8'))
-                global items
-                items = {item['barcode']: item for item in updated_items}
+                updated_inventory = json.loads(post_data.decode('utf-8'))
+                global inventory
+                inventory = updated_inventory
                 self.send_response(200)
                 self.send_header('Content-type', 'text/plain')
                 self.end_headers()
@@ -204,13 +159,10 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
     print(f"Serving at port {PORT}")
     http_server_thread = threading.Thread(target=httpd.serve_forever)
-    #barcode_scanner_thread = threading.Thread(target=run_barcode_scanner)
+    barcode_scanner_thread = threading.Thread(target=decode_barcode_from_webcam)
     http_server_thread.start()
+    barcode_scanner_thread.start()
 
-    while True:
-        pass
-    #barcode_scanner_thread.start()
-
-    #barcode_scanner_thread.join()
-    #httpd.shutdown()
-    #http_server_thread.join()
+    barcode_scanner_thread.join()
+    httpd.shutdown()
+    http_server_thread.join()
