@@ -10,6 +10,7 @@ import threading
 from datetime import datetime
 
 PORT = 8000
+inventory = {}
 
 if os.path.exists('inventory.json'):
     with open('inventory.json', 'r') as f:
@@ -20,15 +21,24 @@ else:
     inventory = {}
 
 scanned_barcodes = {}
+print(inventory)
 
 def add_quantity(barcode):
-    barcode_int = int(barcode)
     scanned_date = datetime.now().strftime("%Y-%m-%d")
-
-    if barcode_int in inventory:
-        inventory[barcode_int]['scans'].append(scanned_date)
+    barcode = str(barcode)
+    if barcode in inventory:
+        inventory_entry = inventory[barcode]
+        inventory_entry['scans'].append(scanned_date)
+        
+        if inventory_entry['name'] == "Unknown":
+            print(f"Barcode {barcode} found, but the name is unknown.")
+        else:
+            print(f"Barcode {barcode} ({inventory_entry['name']}) found.")
+        
+        inventory_entry['size'] += 1
+        print(f"Added one size for {inventory_entry['name']}. New size: {inventory_entry['size']}")
     else:
-        inventory[barcode_int] = {
+        inventory[barcode] = {
             "name": "Unknown",
             "generic_name": "Unknown",
             "size": 1,
@@ -36,11 +46,10 @@ def add_quantity(barcode):
             "shelf_life": 7,
             "scans": [scanned_date]
         }
+        print(f"Barcode {barcode} added with unknown name and size 1.")
 
     with open('inventory.json', 'w') as f:
         json.dump(inventory, f, indent=2)
-
-    print(f"Barcode {barcode} added/updated in inventory.")
 
 def decode_barcode_from_webcam():
     cap = cv2.VideoCapture(0)
@@ -58,21 +67,30 @@ def decode_barcode_from_webcam():
         for obj in decoded_objects:
             barcode = obj.data.decode('utf-8')
 
-            if barcode in scanned_barcodes:
-                scanned_barcodes[barcode] += 1
+            try:
+                barcode_int = int(barcode)
+            except ValueError:
+                print(f"Invalid barcode: {barcode}")
+                continue
+
+            if barcode_int in scanned_barcodes:
+                scanned_barcodes[barcode_int] += 1
             else:
-                scanned_barcodes[barcode] = 1
+                scanned_barcodes[barcode_int] = 1
 
-            if scanned_barcodes[barcode] == 15:
+            if scanned_barcodes[barcode_int] == 15:
                 time.sleep(1)
-                scanned_barcodes[barcode] = 1
+                scanned_barcodes[barcode_int] = 1
 
-                add_quantity(barcode)
+                try:
+                    add_quantity(barcode_int)
+                except Exception as e:
+                    print(f"Error adding barcode to inventory: {e}")
 
             cv2.rectangle(frame, (obj.rect.left, obj.rect.top),
                           (obj.rect.left + obj.rect.width, obj.rect.top + obj.rect.height),
                           (0, 255, 0), 2)
-            cv2.putText(frame, barcode, (obj.rect.left, obj.rect.top - 10),
+            cv2.putText(frame, str(barcode_int), (obj.rect.left, obj.rect.top - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
         cv2.imshow('Barcode Scanner', frame)
