@@ -103,6 +103,20 @@ function displayInventory(inventoryData) {
       div.appendChild(productQuantityDiv);
     });
   })
+
+  // Hide unused sections
+  if (!use_in_0_days.hasChildNodes()) {
+    use_in_0_days.style.display = 'none';
+  }
+  if (!use_in_1_days.hasChildNodes()) {
+    use_in_1_days.style.display = 'none';
+  }
+  if (!use_in_3_days.hasChildNodes()) {
+    use_in_3_days.style.display = 'none';
+  }
+  if (!use_in_7_days.hasChildNodes()) {
+    use_in_7_days.style.display = 'none';
+  }
 }
 
 function calculateDaysLeft(dateString, shelfLife) {
