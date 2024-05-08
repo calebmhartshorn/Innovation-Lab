@@ -62,11 +62,14 @@ async function updateInventory(jsonData) {
 }
 
 function displayInventory(inventoryData) {
-  const use_in_0_days = document.getElementById('use-in-0-days')
-  const use_in_1_days = document.getElementById('use-in-1-days')
-  const use_in_3_days = document.getElementById('use-in-3-days')
-  const use_in_7_days = document.getElementById('use-in-7-days')
+  const expired = document.getElementById('expired').children[1]
 
+  const use_in_0_days = document.getElementById('use-in-0-days').children[1]
+  const use_in_1_days = document.getElementById('use-in-1-days').children[1]
+  const use_in_3_days = document.getElementById('use-in-3-days').children[1]
+  const use_in_7_days = document.getElementById('use-in-7-days').children[1]
+
+  expired.innerHTML = '';
   use_in_0_days.innerHTML = '';
   use_in_1_days.innerHTML = '';
   use_in_3_days.innerHTML = '';
@@ -89,7 +92,8 @@ function displayInventory(inventoryData) {
       productQuantityDiv.classList.add('product-quantity');
       productQuantityDiv.textContent = `${element.size} ${element.size_units}`;
       
-      let div = use_in_0_days;
+      console.log(daysLeft)
+      let div = expired;
 
       if (daysLeft >= 7) {
         div = use_in_7_days;
@@ -97,10 +101,13 @@ function displayInventory(inventoryData) {
         div = use_in_3_days;
       } else if (daysLeft >= 1) {
         div = use_in_1_days;
+      } else if (daysLeft >= 0) {
+        div = use_in_0_days;
       }
 
       div.appendChild(productNameDiv);
       div.appendChild(productQuantityDiv);
+      div.parentElement.style.display = "block"
     });
   })
 

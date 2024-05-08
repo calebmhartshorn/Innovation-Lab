@@ -9,8 +9,8 @@
     font-size: 16px;
     --small-spacing: 8px;
 
-    --primary-accent: #39D374;
-    --primary-accent-dark: #2C564A;
+    --primary-accent: #38d15e;
+    --primary-accent-dark: #4ca551;
     --very-dark: #1f2c28;
     --secondary-accent: #917A6A;
     --tertiary: #ACABB3;
@@ -18,8 +18,9 @@
 }
 
 h3 {
-    font-size: 1.2rem;
-    font-weight: 400;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
 }
 
 header {
@@ -84,20 +85,35 @@ header {
     padding: 0 16px;
     line-height: 2rem;
     font-size: 1.25rem;
-    color: var(--very-dark);
     }
+    
     #inventory-section>div {
+        border-radius: 16px;
+        box-shadow: 0 2px 5px 2px #0003;
+        margin-bottom: 16px;
+        display: none;
+    }
+
+
+    #inventory-section items {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        border-radius: 16px;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 2px 5px 2px #0003;
+        /*box-shadow: 0 2px 5px 2px #0003;*/
     }
     #inventory-section h3 {
-        grid-column: span 2;
         text-align: center;
-        background-color: var(--primary-accent);
+        background-color: var(--primary-accent-dark);
         padding: 10px;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        /*box-shadow: 0 2px 5px 2px #0003;*/
+
+    }
+    #expired h3 {
+        background-color: rgb(231, 74, 74);
     }
     .product-name {
         padding: 4px 12px;
