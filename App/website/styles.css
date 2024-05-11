@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+:root {
+    font-size: 16px;
+    --small-spacing: 8px;
+
+    --primary-accent: #38d15ed3;
+    --primary-accent-dark: #4ca55199;
+    --very-dark: #1f2c28;
+    --secondary-accent: #917A6A;
+    --tertiary: #ACABB3;
+
+}
+
+body {
+    background-image: url("Assets/leaf.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100%;
+
+}
+
+h3 {
+    font-size: 2.0rem;
+    font-weight: 400;
+    color: white;
+}
+div {
+    font-weight: 600;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: var(--primary-accent);
+    z-index: 10;
+    box-shadow: 
+              0px 3px 6px #0005;
+              
+    }
+    header nav {
+        margin: 16px;
+    }
+    header ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        list-style-type: none;
+        }
+        header ul i {
+            display:none;
+            font-size: 1rem;
+            color: #0000;
+}
+
+
+
+#inventory-section {
+    margin: 90px 0;
+    padding: 0 16px;
+    line-height: 2rem;
+    font-size: 1.25rem;
+    font-weight: 200;
+    }
+    
+    #inventory-section>div {
+        border-radius: 8px;
+        box-shadow: 0 2px 5px 2px #0005;
+        margin-bottom: 16px;
+        display: none;
+        background: #fff8;
+        backdrop-filter: blur(5px);
+    }
+
+
+    #inventory-section items {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        overflow: hidden;
+        /*box-shadow: 0 2px 5px 2px #0003;*/
+    }
+    #inventory-section h3 {
+        text-align: center;
+        background: linear-gradient(
+            to bottom,
+            #fff2 95%,
+            #fff6
+        );
+        padding: 10px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        /*box-shadow: 0 2px 5px 2px #0003;*/
+        color: rgb(0 87 43);
+
+
+    }
+    #expired h3 {
+        color: rgb(153, 4, 4);
+
+    }
+    .product-name {
+        padding: 4px 12px;
+    }
+    .product-quantity {
+        padding: 4px 12px;
+        text-align: right;
+    }
