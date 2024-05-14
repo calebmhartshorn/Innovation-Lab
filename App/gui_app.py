@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 #import chardet
-import sys, logging, math
+import sys, logging, math, time
 from enum import Enum
 from datetime import datetime, timedelta
 sys.path.append("/home/pi/lg-master/LCD_Module_RPI_code/RaspberryPi/python")
@@ -15,6 +15,7 @@ class State(Enum):
     WELCOME = 0
     MAIN = 1
     SCAN_OUT = 2
+    SLEEP = 3
 
 class App():
 
@@ -35,8 +36,7 @@ class App():
         # Initialize library.
         self.lcd.Init()
 
-        #Set the backlight to 100
-        self.lcd.bl_DutyCycle(100)
+
 
         # Setup buttons
         PIN_BTN_LEFT = 15
@@ -55,6 +55,8 @@ class App():
         self.is_btn_right_just_pressed = False
         self.is_btn_middle_just_pressed = False
 
+        self.no_input_ts = datetime.now()
+
         self.font1 = ImageFont.truetype("Font00.ttf",48)
 
         self.exit = False
@@ -66,13 +68,23 @@ class App():
         self.welcome_text_y = 240
         self.welcome_start_ts = datetime.now()
 
+        #Set the backlight to 100
+        self.lcd.bl_DutyCycle(100)
+#        self.lcd.clear()
+
     def init_main_state(self):
         self.state = State.MAIN
         self.menu_scroll_position = 0
         self.menu_cursor_position = 0
-    
+        self.no_input_ts = datetime.now()
+
     def init_scan_out_state(self):
         self.state = State.SCAN_OUT
+
+    def init_sleep_state(self):
+        self.state = State.SLEEP
+        #Set the backlight to 0
+        self.lcd.bl_DutyCycle(0)
 
     def start(self):
         while self.exit == False:
@@ -88,6 +100,7 @@ class App():
         self.is_btn_right_just_pressed = False
         self.is_btn_middle_just_pressed = False
         while not self.commands_queue.empty(): 
+            self.no_input_ts = datetime.now()
             command = self.commands_queue.get()
             if command[0] == 'left':
                 self.is_btn_left_just_pressed = True
@@ -95,6 +108,7 @@ class App():
                 self.is_btn_right_just_pressed = True
             elif command[0] == 'middle':
                 self.is_btn_middle_just_pressed = True
+        self.sec_since_last_input = (datetime.now() - self.no_input_ts).seconds
 
     def update(self):
         match self.state:
@@ -119,12 +133,17 @@ class App():
                         self.menu_scroll_position = self.menu_cursor_position - 4
                 if self.is_btn_middle_just_pressed:
                     self.init_scan_out_state()
+                if self.sec_since_last_input > 5:
+                    self.init_sleep_state()
             case State.SCAN_OUT:
                 if self.is_btn_middle_just_pressed or \
                    self.is_btn_left_just_pressed or \
                    self.is_btn_right_just_pressed:
                     
                     self.init_main_state()
+            case State.SLEEP:
+                if self.sec_since_last_input < 5:
+                    self.init_welcome_state()
 
 
     def render(self):
@@ -149,7 +168,7 @@ class App():
 
                 image=image.rotate(90, expand=True)        
                 self.lcd.ShowImage(image)
-            
+
             case State.MAIN:                
                 image = Image.open('leaf_320x240.jpg')
                 enhancer = ImageEnhance.Brightness(image)
@@ -194,6 +213,11 @@ class App():
                 draw.multiline_text((160, 120), "Scan to Remove", fill=(255, 0, 0), font=ImageFont.truetype("Font00.ttf", 32), anchor='mm')
 
                 # Update the LCD with the drawn content
+                image=image.rotate(90, expand=True)        
+                self.lcd.ShowImage(image)
+            
+            case State.SLEEP:
+                image = Image.new("RGB", (320,240), (0, 0, 0))
                 image=image.rotate(90, expand=True)        
                 self.lcd.ShowImage(image)
 

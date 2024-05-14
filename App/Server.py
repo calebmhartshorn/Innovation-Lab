@@ -81,6 +81,9 @@ def decode_barcode_from_webcam():
     sound = pygame.mixer.Sound('blip-131856.mp3')
     
     while True:
+        if app.state == State.SLEEP:
+            continue
+
         frame = picam2.capture_array()
 
         scale = 0.2
@@ -101,15 +104,18 @@ def decode_barcode_from_webcam():
                 print(f"Invalid barcode: {barcode}")
                 continue
 
-            playing = sound.play()
-            time.sleep(.5)
 
             try:
-                print(app.state)
                 if app.state == State.MAIN:
                     add_quantity(barcode_int)
+                    app.no_input_ts = datetime.datetime.now()
+                    playing = sound.play()
+                    time.sleep(.5)
                 elif app.state == State.SCAN_OUT:
                     remove_quantity(barcode_int)
+                    app.no_input_ts = datetime.datetime.now()                    
+                    playing = sound.play()
+                    time.sleep(.5)
             except Exception as e:
                 print(f"Error adding barcode to inventory: {e}")
 
