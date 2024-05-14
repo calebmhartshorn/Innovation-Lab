@@ -1,11 +1,11 @@
 # import OS and set environment variables
 import os
-os.environ['XDG_RUNTIME_DIR'] = '/tmp/runtime-root/' # Set root working dir
+os.environ['XDG_RUNTIME_DIR'] = '/tmp/runtime-user/' # Set root working dir
 os.environ['LIBCAMERA_LOG_LEVELS'] = '4'             # Hide libcamera logs
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'       # Hide pygame messages
 
 # Default Libs
-import time, datetime, threading, http.server, socketserver, json
+import time, datetime, threading, http.server, socketserver, json, logging
 
 # Non-default Libs
 import cv2                                   # OpenCV - For vision processing 
@@ -15,6 +15,15 @@ import pygame                                # pygame - For sound effects
 
 # Local files
 import gui_app
+
+# Setup logging
+logger = logging.getLogger('simple_example')
+logger.setLevel(logging.DEBUG)
+console = logging.StreamHandler()
+console.setLevel(level=logging.DEBUG)
+formatter =  logging.Formatter('%(levelname)s : %(message)s')
+console.setFormatter(formatter)
+logger.addHandler(console)
 
 # Globals
 HTTP_SERVER_PORT = 8000
@@ -53,6 +62,7 @@ def add_quantity(barcode):
         json.dump(inventory, f, indent=2)
 
 def decode_barcode_from_webcam():
+    cv2.namedWindow('image',cv2.WINDOW_GUI_NORMAL)
     
     Picamera2.set_logging(Picamera2.ERROR)
     picam2 = Picamera2()
@@ -66,7 +76,7 @@ def decode_barcode_from_webcam():
     
     pygame.mixer.pre_init(frequency=44100, size=-16, channels=2)
     pygame.mixer.init()
-    sound = pygame.mixer.Sound('/home/pi/App/blip-131856.mp3')
+    sound = pygame.mixer.Sound('blip-131856.mp3')
     
     while True:
         frame = picam2.capture_array()
@@ -179,21 +189,28 @@ def main():
     if os.path.exists('inventory.json'):
         with open('inventory.json', 'r', encoding='UTF-8') as f:
             inventory = json.load(f)
-            print("Loaded inventory")
     else:
         print("File 'inventory.json' not found. Creating a new one.")
         inventory = {}
     
     with socketserver.TCPServer(("", HTTP_SERVER_PORT), MyHTTPRequestHandler) as httpd:
+        # Instantiate GUI app
+        app = gui_app.App(logger, inventory)
+        
+        # Create thread objects
+        app_thread = threading.Thread(target=app.start)
         http_server_thread = threading.Thread(target=httpd.serve_forever)
-        barcode_scanner_thread = threading.Thread(target=decode_barcode_from_webcam)
+        
+        # Start threads
+        app_thread.start()
         http_server_thread.start()
-        barcode_scanner_thread.start()
 
-        app = gui_app.App()
+        decode_barcode_from_webcam()
 
-        barcode_scanner_thread.join()
+        # Terminate & join remaining threads
+        app.shutdown()
         httpd.shutdown()
+        app_thread.join()
         http_server_thread.join()
 
 if __name__ == "__main__":
