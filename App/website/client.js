@@ -1,24 +1,28 @@
 async function fetchInventoryData() {
-    try {
-        console.log('Fetching inventory data...');
-        const response = await fetch('/inventory');
+  try {
+      console.log('Fetching inventory data...');
+      const response = await fetch('/inventory');
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch inventory data: ${response.status}`);
-        }
+      if (!response.ok) {
+          throw new Error(`Failed to fetch inventory data: ${response.status}`);
+      }
 
-        const data = await response.json();
-        console.log('Inventory data fetched:', data);
+      const data = await response.json();
+      console.log('Inventory data fetched:', data);
 
-        // Call the displayInventory function with the fetched data
-        displayInventory(data);
+      // Call the displayInventory function with the fetched data
+      displayInventory(data);
 
-        return data;
-    } catch (error) {
-        console.error('Error fetching inventory data:', error);
-        throw error;
-    }
+      // Continuously fetch inventory data every 5 minutes (300000 milliseconds)
+      setInterval(fetchInventoryData, 1000); // Adjust the interval as needed
+
+      return data;
+  } catch (error) {
+      console.error('Error fetching inventory data:', error);
+      throw error;
+  }
 }
+
 
 async function fetchRecipes(ingredients) {
     try {

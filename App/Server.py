@@ -161,7 +161,7 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
                 inventory_data = json.dumps(inventory).encode()
-                print(f"Sending inventory data: {inventory_data}")
+                print(f"Sending inventory data")
                 self.wfile.write(inventory_data)
             else:
                 super().do_GET()
