@@ -7,13 +7,15 @@ from datetime import datetime, timedelta
 sys.path.append("/home/pi/lg-master/LCD_Module_RPI_code/RaspberryPi/python")
 from lib import LCD_2inch4
 import gpiozero
-from PIL import Image,ImageDraw,ImageFont  
+from PIL import Image,ImageDraw,ImageFont, ImageEnhance
+import queue  # Import the queue module
 
 
 class State(Enum):
     WELCOME = 0
     MAIN = 1
-    
+    SCAN_OUT = 2
+
 class App():
 
     def __init__(self, logger, inventory):
@@ -37,15 +39,21 @@ class App():
         self.lcd.bl_DutyCycle(100)
 
         # Setup buttons
-        PIN_BTN_LEFT = 14
+        PIN_BTN_LEFT = 15
         PIN_BTN_RIGHT = 17
-        PIN_BTN_MIDDLE = 15
-        self.btn_left = gpiozero.Button(PIN_BTN_LEFT)
-        self.btn_right = gpiozero.Button(PIN_BTN_RIGHT)
-        self.btn_middle = gpiozero.Button(PIN_BTN_MIDDLE)
-        self.btn_left.when_pressed = self.button_pressed
-        self.btn_right.when_pressed = self.button_pressed
-        self.btn_middle.when_pressed = self.button_pressed
+        PIN_BTN_MIDDLE = 14
+        self.btn_left = gpiozero.Button(PIN_BTN_LEFT, bounce_time=0.05)
+        self.btn_right = gpiozero.Button(PIN_BTN_RIGHT, bounce_time=0.05)
+        self.btn_middle = gpiozero.Button(PIN_BTN_MIDDLE, bounce_time=0.05)
+        self.commands_queue = queue.Queue()  # Define a queue for commands
+
+        self.btn_left.when_pressed = lambda: self.commands_queue.put(('left',))
+        self.btn_right.when_pressed = lambda: self.commands_queue.put(('right',))
+        self.btn_middle.when_pressed = lambda: self.commands_queue.put(('middle',))
+
+        self.is_btn_left_just_pressed = False
+        self.is_btn_right_just_pressed = False
+        self.is_btn_middle_just_pressed = False
 
         self.font1 = ImageFont.truetype("Font00.ttf",48)
 
@@ -60,38 +68,72 @@ class App():
 
     def init_main_state(self):
         self.state = State.MAIN
-        print(self.process_items())
+        self.menu_scroll_position = 0
+        self.menu_cursor_position = 0
+    
+    def init_scan_out_state(self):
+        self.state = State.SCAN_OUT
 
     def start(self):
         while self.exit == False:
+            self.update_inputs()
             self.update()
             self.render()
     
     def shutdown(self):
         self.exit = True
+    
+    def update_inputs(self):
+        self.is_btn_left_just_pressed = False
+        self.is_btn_right_just_pressed = False
+        self.is_btn_middle_just_pressed = False
+        while not self.commands_queue.empty(): 
+            command = self.commands_queue.get()
+            if command[0] == 'left':
+                self.is_btn_left_just_pressed = True
+            elif command[0] == 'right':
+                self.is_btn_right_just_pressed = True
+            elif command[0] == 'middle':
+                self.is_btn_middle_just_pressed = True
 
-
-    def button_pressed(self, caller):
-        if caller == self.btn_left:
-            print('Left button pressed')
-        if caller == self.btn_right:
-            print('Right button pressed')
-        if caller == self.btn_middle:
-            print('Middle button pressed')
-            self.welcome_text_y = 240
-        
     def update(self):
         match self.state:
             case State.WELCOME:
                 self.welcome_text_y += (120 - self.welcome_text_y) * 0.25
                 ellapsed_time = datetime.now() - self.welcome_start_ts
-                if ellapsed_time.seconds > 3:
+                if ellapsed_time.seconds > 1:
                     self.init_main_state()
+            case State.MAIN:
+                if self.is_btn_left_just_pressed:
+                    self.menu_cursor_position -= 1  # Move up in the list
+                    if self.menu_cursor_position < 0:
+                        self.menu_cursor_position = 0  # Ensure the position doesn't go below 0
+                    if self.menu_scroll_position > self.menu_cursor_position:
+                        self.menu_scroll_position = self.menu_cursor_position
+                if self.is_btn_right_just_pressed:
+                    self.menu_cursor_position += 1  # Move down in the list
+                    length = len(self.process_items())
+                    if self.menu_cursor_position > length - 1:
+                        self.menu_cursor_position = length - 1
+                    if self.menu_scroll_position + 4 < self.menu_cursor_position:
+                        self.menu_scroll_position = self.menu_cursor_position - 4
+                if self.is_btn_middle_just_pressed:
+                    self.init_scan_out_state()
+            case State.SCAN_OUT:
+                if self.is_btn_middle_just_pressed or \
+                   self.is_btn_left_just_pressed or \
+                   self.is_btn_right_just_pressed:
+                    
+                    self.init_main_state()
+
 
     def render(self):
         match self.state:
             case State.WELCOME:
                 image = Image.open('leaf_320x240.jpg')
+                enhancer = ImageEnhance.Brightness(image)
+                # to reduce brightness by 50%, use factor 0.5
+                image = enhancer.enhance(0.5)#translate(self.welcome_text_y, 240, 120, 1.0, 0.5))
                 draw = ImageDraw.Draw(image)
                 
                 txt = Image.new("RGBA", image.size, (255, 255, 255, 0))
@@ -110,25 +152,51 @@ class App():
             
             case State.MAIN:                
                 image = Image.open('leaf_320x240.jpg')
-                draw = ImageDraw.Draw(image)
-                draw.text((10, 10), "Top 3 Expiring Items", fill=(255, 255, 255), font=self.font1)
+                enhancer = ImageEnhance.Brightness(image)
+                # to reduce brightness by 50%, use factor 0.5
+                image = enhancer.enhance(0.5)
                 
+                cursor = Image.new("RGBA", image.size, (255, 255, 255, 0))
+                b = ImageDraw.Draw(cursor)
+
+                y1 = 15 + (self.menu_cursor_position-self.menu_scroll_position)*32*1.25
+                y2 = y1 + 40
+                b.rectangle((10, y1, 310, y2), fill=(255,255,255,50))
+                
+                image = Image.alpha_composite(image.convert("RGBA"), cursor)
+                draw = ImageDraw.Draw(image)
+
                 # Calculate the position for each item
-                y_position = 60
-                font_size = 20
+                y_position = 15
+                font_size = 32
                 
                 # Process items to get the top 3 expiring items
-                top_expiring_items = self.process_items()[:5]
+                top_expiring_items = self.process_items()
                 
-                # Draw each item
-                for item in top_expiring_items:
-                    draw.text((10, y_position), f"{item['name']}: {item['days_left']} days left", fill=(255, 255, 255), font=ImageFont.truetype("Font00.ttf", font_size))
-                    y_position += font_size + 5  # Adjust the Y position for the next item
+                # Display items based on the current position
+                for i, item in enumerate(top_expiring_items):
+                    if i >= self.menu_scroll_position and i < self.menu_scroll_position + 5:  # Only draw items within the current view
+                        draw.multiline_text((10, y_position), f"{item['name']}", fill=(255, 255, 255), font=ImageFont.truetype("Font00.ttf", font_size), anchor='la')
+                        draw.multiline_text((310, y_position), f"{item['days_left']}d", fill=(255, 255, 255), font=ImageFont.truetype("Font00.ttf", font_size), anchor='ra')
+                        y_position += font_size *1.25  # Adjust the Y position for the next item
                 
                 # Update the LCD with the drawn content
                 image=image.rotate(90, expand=True)        
                 self.lcd.ShowImage(image)
-        
+
+            case State.SCAN_OUT:
+                image = Image.open('leaf_320x240.jpg')
+                enhancer = ImageEnhance.Brightness(image)
+                # to reduce brightness by 50%, use factor 0.5
+                image = enhancer.enhance(0.5)
+                draw = ImageDraw.Draw(image)
+                
+                draw.multiline_text((160, 120), "Scan to Remove", fill=(255, 0, 0), font=ImageFont.truetype("Font00.ttf", 32), anchor='mm')
+
+                # Update the LCD with the drawn content
+                image=image.rotate(90, expand=True)        
+                self.lcd.ShowImage(image)
+
     # Returns list of item scans sorted by days left
     def process_items(self):
         # Initialize an empty list to store the processed items
@@ -173,3 +241,13 @@ class App():
 
         return days_left
 
+def translate(value, leftMin, leftMax, rightMin, rightMax):
+    # Figure out how 'wide' each range is
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
+
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - leftMin) / float(leftSpan)
+
+    # Convert the 0-1 range into a value in the right range.
+    return rightMin + (valueScaled * rightSpan)

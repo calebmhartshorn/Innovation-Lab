@@ -1,15 +1,11 @@
 {
   "5028734085075": {
-    "name":"PLIERS",
+    "name": "PLIERS",
     "generic_name": "Unknown",
-    "size": 25,
+    "size": 32,
     "size_units": "Unit",
     "shelf_life": 1,
-    "scans": [
-      "2024-05-12",
-      "2024-05-12",
-      "2024-05-14"
-    ]
+    "scans": []
   },
   "5060357260132": {
     "name": "Unknown",
@@ -17,6 +13,16 @@
     "size": 1,
     "size_units": "Unit",
     "shelf_life": 7,
+    "scans": [
+      "2024-05-11"
+    ]
+  },
+  "5060357260133": {
+    "name": "Plumbii",
+    "generic_name": "Plumbus",
+    "size": 7,
+    "size_units": "Nozzles",
+    "shelf_life": 17,
     "scans": [
       "2024-05-11"
     ]

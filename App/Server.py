@@ -14,7 +14,7 @@ from picamera2 import Picamera2              # Picamera2 - RPi Camera drivers
 import pygame                                # pygame - For sound effects
 
 # Local files
-import gui_app
+from gui_app import App, State
 
 # Setup logging
 logger = logging.getLogger('simple_example')
@@ -29,6 +29,7 @@ logger.addHandler(console)
 HTTP_SERVER_PORT = 8000
 
 inventory = {}
+app = None
 
 
 def add_quantity(barcode):
@@ -38,15 +39,6 @@ def add_quantity(barcode):
     if barcode in inventory:
         inventory_entry = inventory[barcode]
         inventory_entry['scans'].append(scanned_date)
-        
-        if inventory_entry['name'] == "Unknown":
-            print(f"Barcode {barcode} found, but the name is unknown.")
-        else:
-            print(f"Barcode {barcode} ({inventory_entry['name']}) found.")
-        
-        inventory_entry['size'] += 1
-        print(f"Added one size for {inventory_entry['name']}. New size: {inventory_entry['size']}")
-    
     else:
         inventory[barcode] = {
             "name": "Unknown",
@@ -56,12 +48,22 @@ def add_quantity(barcode):
             "shelf_life": 7,
             "scans": [scanned_date]
         }
-        print(f"Barcode {barcode} added with unknown name and size 1.")
 
     with open('inventory.json', 'w') as f:
         json.dump(inventory, f, indent=2)
 
+def remove_quantity(barcode):
+    barcode = str(barcode)    
+    if barcode in inventory:
+        inventory_entry = inventory[barcode]
+        if len(inventory_entry['scans']) > 0:
+            inventory_entry['scans'].pop(0)
+            with open('inventory.json', 'w') as f:
+                json.dump(inventory, f, indent=2)
+    
 def decode_barcode_from_webcam():
+    global app
+
     cv2.namedWindow('image',cv2.WINDOW_GUI_NORMAL)
     
     Picamera2.set_logging(Picamera2.ERROR)
@@ -103,7 +105,11 @@ def decode_barcode_from_webcam():
             time.sleep(.5)
 
             try:
-                add_quantity(barcode_int)
+                print(app.state)
+                if app.state == State.MAIN:
+                    add_quantity(barcode_int)
+                elif app.state == State.SCAN_OUT:
+                    remove_quantity(barcode_int)
             except Exception as e:
                 print(f"Error adding barcode to inventory: {e}")
 
@@ -113,7 +119,6 @@ def decode_barcode_from_webcam():
             cv2.putText(frame, str(barcode_int), (obj.rect.left, obj.rect.top - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-        cv2.rectangle(frame, (50,50),(100,100),(255,0,0),2)
         cv2.imshow('image', frame)
 
         if cv2.waitKey(1) & 0xFF == 27:
@@ -183,7 +188,7 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(500, str(e))
 
 def main():
-    global inventory
+    global inventory, app
     
     # Read in inventory
     if os.path.exists('inventory.json'):
@@ -195,7 +200,7 @@ def main():
     
     with socketserver.TCPServer(("", HTTP_SERVER_PORT), MyHTTPRequestHandler) as httpd:
         # Instantiate GUI app
-        app = gui_app.App(logger, inventory)
+        app = App(logger, inventory)
         
         # Create thread objects
         app_thread = threading.Thread(target=app.start)
