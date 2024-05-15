@@ -263,7 +263,6 @@ class App():
     def process_items(self):
         # Initialize an empty list to store the processed items
         processed_items = []
-        
         # Iterate through each item
         for item_id, item_data in self.inventory.items():
             # Iterate through each scan date

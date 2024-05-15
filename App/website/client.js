@@ -12,9 +12,11 @@ async function fetchInventoryData() {
 
       // Call the displayInventory function with the fetched data
       displayInventory(data);
+      console.log(processItems(data));
+      //fetchRecipes()
 
       // Continuously fetch inventory data every 5 minutes (300000 milliseconds)
-      setInterval(fetchInventoryData, 1000); // Adjust the interval as needed
+      setInterval(fetchInventoryData, 5000); // Adjust the interval as needed
 
       return data;
   } catch (error) {
@@ -23,6 +25,34 @@ async function fetchInventoryData() {
   }
 }
 
+// Returns list of item scans sorted by days left
+function processItems(data) {
+  // Initialize an empty array to store the processed items
+  let processedItems = [];
+  // Iterate through each item
+  for (let item_id in data) {
+      let item_data = data[item_id];
+      // Iterate through each scan date
+      for (let i = 0; i < item_data['scans'].length; i++) {
+          let scan_date = item_data['scans'][i];
+          // Calculate the days left for the scan date
+          let days_left = calculateDaysLeft(scan_date, item_data['shelf_life']);
+
+          // Create a new object with the name and days left
+          let item_with_days_left = {
+              'name': item_data['name'],
+              'days_left': days_left
+          };
+
+          // Append the new object to the processed items array
+          processedItems.push(item_with_days_left);
+      }
+  }
+  // Sort the processed items by days left
+  processedItems.sort((a, b) => a.days_left - b.days_left);
+
+  return processedItems;
+}
 
 async function fetchRecipes(ingredients) {
     try {
@@ -83,10 +113,8 @@ function displayInventory(inventoryData) {
   const items = Object.values(inventoryData);
 
   items.forEach((element, i, arr)=>{
-    console.log(element.name)
     element.scans.forEach((scan, i, arr)=>{
       daysLeft = calculateDaysLeft(scan, element.shelf_life)
-      console.log(daysLeft)
       
       let productNameDiv = document.createElement('div');
       productNameDiv.classList.add('product-name');
@@ -96,7 +124,6 @@ function displayInventory(inventoryData) {
       productQuantityDiv.classList.add('product-quantity');
       productQuantityDiv.textContent = `${element.size} ${element.size_units}`;
       
-      console.log(daysLeft)
       let div = expired;
 
       if (daysLeft >= 7) {
