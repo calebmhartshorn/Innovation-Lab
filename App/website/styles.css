@@ -55,11 +55,6 @@ header {
         justify-content: space-between;
         align-items: center;
         list-style-type: none;
-        }
-        header ul i {
-            display:none;
-            font-size: 1rem;
-            color: #0000;
 }
 
 

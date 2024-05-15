@@ -6,6 +6,9 @@
     "size_units": "Unit",
     "shelf_life": 30,
     "scans": [
+      "2024-05-15",
+      "2024-05-15",
+      "2024-05-15",
       "2024-05-15"
     ]
   },
@@ -32,6 +35,8 @@
     "size_units": "Unit",
     "shelf_life": 180,
     "scans": [
+      "2024-05-15",
+      "2024-05-15",
       "2024-05-15"
     ]
   },
@@ -42,7 +47,16 @@
     "size_units": "Unit",
     "shelf_life": 3,
     "scans": [
+      "2024-05-15",
       "2024-05-15"
     ]
+  },
+  "90131783": {
+    "name": "Unknown",
+    "generic_name": "Unknown",
+    "size": 1,
+    "size_units": "Unit",
+    "shelf_life": 7,
+    "scans": []
   }
 }

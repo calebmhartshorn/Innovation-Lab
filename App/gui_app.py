@@ -4,7 +4,7 @@
 import sys, logging, math, time
 from enum import Enum
 from datetime import datetime, timedelta
-sys.path.append("/home/Matt/lg-master/LCD_Module_RPI_code/RaspberryPi/python")
+sys.path.append("/home/pi/lg-master/LCD_Module_RPI_code/RaspberryPi/python")
 from lib import LCD_2inch4
 import gpiozero
 from PIL import Image,ImageDraw,ImageFont, ImageEnhance
@@ -159,7 +159,7 @@ class App():
             case State.SCAN_OUT_SCANNED:
                 elapsed_time = datetime.now() - self.scanned_start_ts
                 if elapsed_time.seconds > 0.5:
-                    self.init_main_state()
+                    self.init_scan_out_state()
             case State.SLEEP:
                 if self.sec_since_last_input < 60:
                     self.init_welcome_state()

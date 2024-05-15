@@ -5,7 +5,8 @@ os.environ['LIBCAMERA_LOG_LEVELS'] = '4'             # Hide libcamera logs
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'       # Hide pygame messages
 
 # Default Libs
-import time, datetime, threading, http.server, socketserver, json, logging
+import time, datetime, threading, http.server, socketserver, json, logging, requests
+from urllib.parse import urlparse, parse_qs
 
 # Non-default Libs
 import cv2                                   # OpenCV - For vision processing 
@@ -30,7 +31,6 @@ HTTP_SERVER_PORT = 8000
 
 inventory = {}
 app = None
-
 
 def add_quantity(barcode):
     barcode = str(barcode)
@@ -75,7 +75,7 @@ def decode_barcode_from_webcam():
         main = {"size": picam2.sensor_resolution}
     )
     picam2.configure(config)
-    picam2.set_controls({"ExposureTime": 20000, "AnalogueGain": 50.0})
+    picam2.set_controls({"ExposureTime": 5000, "AnalogueGain": 50.0})
     picam2.start()
     
     pygame.mixer.pre_init(frequency=44100, size=-16, channels=2)
@@ -135,6 +135,10 @@ def decode_barcode_from_webcam():
     cv2.destroyAllWindows()
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def set_common_headers(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.end_headers()
     def do_GET(self):
         global inventory
         print("Received GET request")
@@ -171,6 +175,49 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 inventory_data = json.dumps(inventory).encode()
                 print(f"Sending inventory data")
                 self.wfile.write(inventory_data)
+
+
+            elif self.path.startswith("/recipe"):
+                # Parse the URL
+                parsed_url = urlparse(self.path)
+                
+                # Extract the query parameters
+                params = parse_qs(parsed_url.query)
+                
+                # Now you can access the parameters as a dictionary
+                ingredients =          params.get('ingredients',['[]'])[0].replace("[", "").replace("]", "").split(",")
+                mandatoryIngredients = params.get('must', [])
+                if mandatoryIngredients:
+                    mandatoryIngredients = [mandatoryIngredients[0]]
+                else:
+                    mandatoryIngredients = []  # Set it to an empty list if 'must' is not in the query
+
+                url = 'https://realfood.tesco.com/api/ingredientsearch/getrecipes'
+                
+                data = {
+                    # These are a harcoded example. Anything is fine, but make to use at least 3 ingredients and only use terms defined
+                    # in ingredients.txt
+                    'ingredients': ingredients,
+                    'mandatoryIngredients': mandatoryIngredients,
+                    'dietaryRequirements': []
+                }
+                response = requests.post(url, json=data)
+
+                json_data = response.json()
+                #print(json.dumps(json_data, indent=2))
+
+                # Just names
+                response = ""
+                for recipe in json_data['results']:
+                    name = recipe['recipeName']
+                    response += f"<p>{name}</p>"
+                    #print(f"{name}")
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.set_common_headers()
+                self.wfile.write(json.dumps(json_data).encode())
+
+
             else:
                 super().do_GET()
         except Exception as e:
