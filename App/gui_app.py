@@ -4,7 +4,7 @@
 import sys, logging, math, time
 from enum import Enum
 from datetime import datetime, timedelta
-sys.path.append("/home/pi/lg-master/LCD_Module_RPI_code/RaspberryPi/python")
+sys.path.append("/home/Matt/lg-master/LCD_Module_RPI_code/RaspberryPi/python")
 from lib import LCD_2inch4
 import gpiozero
 from PIL import Image,ImageDraw,ImageFont, ImageEnhance
@@ -15,7 +15,9 @@ class State(Enum):
     WELCOME = 0
     MAIN = 1
     SCAN_OUT = 2
-    SLEEP = 3
+    MAIN_SCANNED = 3
+    SCAN_OUT_SCANNED = 4
+    SLEEP = 5
 
 class App():
 
@@ -81,6 +83,16 @@ class App():
     def init_scan_out_state(self):
         self.state = State.SCAN_OUT
 
+    def init_main_scanned_state(self, barcode):
+        self.state = State.MAIN_SCANNED
+        self.scanned_item_name = self.inventory[barcode]["name"]
+        self.scanned_start_ts = datetime.now()
+
+    def init_scan_out_scanned_state(self, barcode):
+        self.state = State.SCAN_OUT_SCANNED
+        self.scanned_item_name = self.inventory[barcode]["name"]
+        self.scanned_start_ts = datetime.now()
+
     def init_sleep_state(self):
         self.state = State.SLEEP
         #Set the backlight to 0
@@ -133,18 +145,24 @@ class App():
                         self.menu_scroll_position = self.menu_cursor_position - 4
                 if self.is_btn_middle_just_pressed:
                     self.init_scan_out_state()
-                if self.sec_since_last_input > 5:
+                if self.sec_since_last_input > 60:
                     self.init_sleep_state()
             case State.SCAN_OUT:
                 if self.is_btn_middle_just_pressed or \
                    self.is_btn_left_just_pressed or \
                    self.is_btn_right_just_pressed:
-                    
+                    self.init_main_state()
+            case State.MAIN_SCANNED:
+                elapsed_time = datetime.now() - self.scanned_start_ts
+                if elapsed_time.seconds > 0.5:
+                    self.init_main_state()
+            case State.SCAN_OUT_SCANNED:
+                elapsed_time = datetime.now() - self.scanned_start_ts
+                if elapsed_time.seconds > 0.5:
                     self.init_main_state()
             case State.SLEEP:
-                if self.sec_since_last_input < 5:
+                if self.sec_since_last_input < 60:
                     self.init_welcome_state()
-
 
     def render(self):
         match self.state:
@@ -214,6 +232,26 @@ class App():
 
                 # Update the LCD with the drawn content
                 image=image.rotate(90, expand=True)        
+                self.lcd.ShowImage(image)
+
+            case State.MAIN_SCANNED:
+                image = Image.open('leaf_320x240.jpg')
+                enhancer = ImageEnhance.Brightness(image)
+                image = enhancer.enhance(0.5)
+                draw = ImageDraw.Draw(image)
+                draw.multiline_text((160, 100), f"Added ", fill=(0, 255, 0), font=ImageFont.truetype("Font00.ttf", 32), anchor='mm')
+                draw.multiline_text((160, 130), f"{self.scanned_item_name}", fill=(0, 255, 0), font=ImageFont.truetype("Font00.ttf", 32), anchor='mm')
+                image = image.rotate(90, expand=True)
+                self.lcd.ShowImage(image)
+
+            case State.SCAN_OUT_SCANNED:
+                image = Image.open('leaf_320x240.jpg')
+                enhancer = ImageEnhance.Brightness(image)
+                image = enhancer.enhance(0.5)
+                draw = ImageDraw.Draw(image)
+                draw.multiline_text((160, 100), f"Removed ", fill=(255, 0, 0), font=ImageFont.truetype("Font00.ttf", 32), anchor='mm')
+                draw.multiline_text((160, 130), f"{self.scanned_item_name}", fill=(255, 0, 0), font=ImageFont.truetype("Font00.ttf", 32), anchor='mm')
+                image = image.rotate(90, expand=True)
                 self.lcd.ShowImage(image)
             
             case State.SLEEP:
