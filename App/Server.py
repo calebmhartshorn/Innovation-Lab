@@ -51,6 +51,7 @@ def add_quantity(barcode):
 
     with open('inventory.json', 'w') as f:
         json.dump(inventory, f, indent=2)
+    app.init_main_scanned_state(barcode)
 
 def remove_quantity(barcode):
     barcode = str(barcode)    
@@ -60,6 +61,7 @@ def remove_quantity(barcode):
             inventory_entry['scans'].pop(0)
             with open('inventory.json', 'w') as f:
                 json.dump(inventory, f, indent=2)
+    app.init_scan_out_scanned_state(barcode)
     
 def decode_barcode_from_webcam():
     global app
@@ -93,7 +95,7 @@ def decode_barcode_from_webcam():
         
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         
-        decoded_objects = decode(frame, symbols=[ZBarSymbol.EAN13])
+        decoded_objects = decode(frame, symbols=[ZBarSymbol.EAN8])
 
         for obj in decoded_objects:
             barcode = obj.data.decode('utf-8')
@@ -101,7 +103,7 @@ def decode_barcode_from_webcam():
             try:
                 barcode_int = int(barcode)
             except ValueError:
-                print(f"Invalid barcode: {barcode}")
+                print(f"Invalid barcode: {barcode}")/home/Matt/lg-master/LCD_Module_RPI_code/RaspberryPi/python/example
                 continue
 
 
