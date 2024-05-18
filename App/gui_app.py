@@ -4,7 +4,11 @@
 import sys, logging, math, time
 from enum import Enum
 from datetime import datetime, timedelta
-sys.path.append("/home/pi/lg-master/LCD_Module_RPI_code/RaspberryPi/python")
+import os
+# Gets the current user's home directory so it could be pi or Matt or whatever
+home_dir = os.path.expanduser('~')
+lg_folder = os.path.join(home_dir, 'lg-master', 'LCD_Module_RPI_code', 'RaspberryPi', 'python')
+sys.path.append(lg_folder)
 from lib import LCD_2inch4
 import gpiozero
 from PIL import Image,ImageDraw,ImageFont, ImageEnhance
