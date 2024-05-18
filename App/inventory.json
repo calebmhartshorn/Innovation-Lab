@@ -5,12 +5,7 @@
     "size": 1,
     "size_units": "Unit",
     "shelf_life": 30,
-    "scans": [
-      "2024-05-15",
-      "2024-05-15",
-      "2024-05-15",
-      "2024-05-15"
-    ]
+    "scans": []
   },
   "90131844": {
     "name": "Penne",
@@ -58,5 +53,17 @@
     "size_units": "Unit",
     "shelf_life": 7,
     "scans": []
+  },
+  "90131790": {
+    "name": "Unknown",
+    "generic_name": "Unknown",
+    "size": 1,
+    "size_units": "Unit",
+    "shelf_life": 7,
+    "scans": [
+      "2024-05-15",
+      "2024-05-15",
+      "2024-05-15"
+    ]
   }
 }

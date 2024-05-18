@@ -204,7 +204,7 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 response = requests.post(url, json=data)
 
                 json_data = response.json()
-                #print(json.dumps(json_data, indent=2))
+                print(json.dumps(json_data, indent=2))
 
                 # Just names
                 response = ""
@@ -252,8 +252,9 @@ def main():
     else:
         print("File 'inventory.json' not found. Creating a new one.")
         inventory = {}
-    
-    with socketserver.TCPServer(("", HTTP_SERVER_PORT), MyHTTPRequestHandler) as httpd:
+    class MyTCPServer(socketserver.TCPServer):
+        allow_reuse_address = True
+    with MyTCPServer(("", HTTP_SERVER_PORT), MyHTTPRequestHandler) as httpd:
         # Instantiate GUI app
         app = App(logger, inventory)
         

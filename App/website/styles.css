@@ -111,3 +111,36 @@ header {
         padding: 4px 12px;
         text-align: right;
     }
+
+
+#top-recipe-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 16px;
+    margin: 90px 0;
+}
+
+.recipe-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: #fff8;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px 2px #0005;
+    overflow: hidden;
+}
+
+.recipe-item img.recipe-image {
+    width: 100%;
+    height: auto;
+    border-bottom: 2px solid var(--primary-accent);
+}
+
+.recipe-name {
+    padding: 10px;
+    background: linear-gradient(to bottom, #fff2 95%, #fff6);
+    width: 100%;
+    color: var(--very-dark);
+}

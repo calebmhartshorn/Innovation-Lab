@@ -8,23 +8,49 @@ async function fetchInventoryData() {
       }
 
       const data = await response.json();
-      console.log('Inventory data fetched:', data);
+      //console.log('Inventory data fetched:', data);
 
-      // Call the displayInventory function with the fetched data
       displayInventory(data);
-      console.log(processItems(data));
-      //fetchRecipes()
 
+      // Fetch and display recipes
+      const ingredients = processItems(data);
+      const recipes = await fetchRecipes(ingredients);
+      displayRecipes(recipes);
       // Continuously fetch inventory data every 5 minutes (300000 milliseconds)
-      setInterval(fetchInventoryData, 5000); // Adjust the interval as needed
+      setInterval(fetchInventoryData, 30000); // Adjust the interval as needed
 
       return data;
   } catch (error) {
       console.error('Error fetching inventory data:', error);
       throw error;
   }
-}
+}function displayRecipes(recipes) {
+  const topRecipeSection = document.getElementById('top-recipe-section');
+  topRecipeSection.innerHTML = ''; // Clear any existing content
 
+  recipes.forEach(recipe => {
+      const recipeLink = document.createElement('a');
+      recipeLink.href = recipe.recipeUrl;
+      recipeLink.target = '_blank'; // Open link in a new tab
+
+      const recipeImage = document.createElement('img');
+      recipeImage.src = recipe.recipeImage; 
+      recipeImage.alt = recipe.recipeName;
+      recipeImage.className = 'recipe-image';
+
+      const recipeName = document.createElement('div');
+      recipeName.className = 'recipe-name';
+      recipeName.textContent = recipe.recipeName;
+
+      const recipeDiv = document.createElement('div');
+      recipeDiv.className = 'recipe-item';
+      recipeDiv.appendChild(recipeImage);
+      recipeDiv.appendChild(recipeName);
+
+      recipeLink.appendChild(recipeDiv);
+      topRecipeSection.appendChild(recipeLink);
+  });
+}
 // Returns list of item scans sorted by days left
 function processItems(data) {
   // Initialize an empty array to store the processed items
@@ -41,6 +67,7 @@ function processItems(data) {
           // Create a new object with the name and days left
           let item_with_days_left = {
               'name': item_data['name'],
+              'generic_name': item_data['generic_name'],
               'days_left': days_left
           };
 
@@ -51,7 +78,20 @@ function processItems(data) {
   // Sort the processed items by days left
   processedItems.sort((a, b) => a.days_left - b.days_left);
 
-  return processedItems;
+  let uniqueGenericNames = new Set();
+  let limitedItems = [];
+  let N = 3;
+  for (let item of processedItems) {
+      if (uniqueGenericNames.size >= N) {
+          break;
+      }
+      if (!uniqueGenericNames.has(item.generic_name)) {
+          uniqueGenericNames.add(item.generic_name);
+          limitedItems.push(item.generic_name);
+      }
+  }
+
+  return limitedItems;
 }
 
 async function fetchRecipes(ingredients) {
