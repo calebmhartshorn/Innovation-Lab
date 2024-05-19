@@ -11,11 +11,11 @@ After all the parts have been printed using the given STLs the assembly proccess
 
 Step #1: Attach the screen to the mounting frame using the smaller bushings with a nylon nut and bolt.
 
-Step #2: Connect the screen to the Raspberry Pi.
+Step #2: Connect the screen to the Raspberry Pi following the screens wiki page (https://www.waveshare.com/wiki/2.4inch_LCD_Module).
 
 Step #3: Attach the camera to the mounting frame using the longer bushing with a nylon nut and bolt.
 
-Step #4: Attach the camera cable adapter to the Raspberry Pi and the camera
+Step #4: Attach the camera cable adapter to the Raspberry Pi using the camera port 0, and the camera
 
 Step #5: Ensure the SD card has been placed within the Raspberry Pi.
 
@@ -23,7 +23,7 @@ Step #6: Thread a screw through the back casing, the Raspberry Pi, and mounting 
 
 Step #7: Next, clip the buttons into there slot, located at the top of the back casing. 
 
-Step #8: Wire these buttons into the Raspberry Pi.
+Step #8: Wire these buttons into GPIO ports 14, 15, and 17.
 
 Step #9: The printed buttons can then be glued onto these buttons.
 
