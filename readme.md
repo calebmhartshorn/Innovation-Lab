@@ -1,5 +1,5 @@
 # QuarterMaster
-![](Marketing\banner.png)
+![QuarterMaster Banner Image](Marketing/banner.png)
 QuarterMaster is a smart kitchen device used to track grocery inventory, expiration dates, and suggest recipes to minimize food waste.
 
 More details can be found at our [website](https://oliverstratford23.wixsite.com/quartermaster).
