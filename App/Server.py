@@ -103,7 +103,7 @@ def decode_barcode_from_webcam():
             try:
                 barcode_int = int(barcode)
             except ValueError:
-                print(f"Invalid barcode: {barcode}")/home/Matt/lg-master/LCD_Module_RPI_code/RaspberryPi/python/example
+                print(f"Invalid barcode: {barcode}")
                 continue
 
 
